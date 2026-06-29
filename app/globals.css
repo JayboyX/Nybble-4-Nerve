@@ -75,6 +75,19 @@ body {
   }
 }
 
+/* Results page grid */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .results-grid {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
+
 /* Responsive grid for stories + sidebar */
 .content-grid {
   display: grid;

@@ -1,8 +1,8 @@
-import { AnimatedCounter } from "./components/animated-counter";
-import { Ticker } from "./components/ticker";
-import { HeroSection } from "./components/hero-section";
-import { CheckCtaButton } from "./components/check-cta-button";
-import { Icon, IonIconLoader } from "./components/icon";
+import { AnimatedCounter } from "@/components/animated-counter";
+import { Ticker } from "@/components/ticker";
+import { HeroSection } from "@/components/hero-section";
+import { CheckCtaButton } from "@/components/check-cta-button";
+import { Icon, IonIconLoader } from "@/components/icon";
 import {
   getStats,
   getTopStolen,

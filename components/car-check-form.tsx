@@ -8,7 +8,7 @@ import {
   getModelsForMake,
   getYearsForModel,
   SA_PROVINCES,
-} from "../lib/vehicles";
+} from "@/app/lib/vehicles";
 
 const selectStyle: React.CSSProperties = {
   width: "100%",

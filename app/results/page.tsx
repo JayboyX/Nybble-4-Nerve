@@ -1,20 +1,12 @@
 import { Suspense } from "react";
-import { calculateRisk, generateStories, getLevelColor, getLevelBg } from "../lib/risk";
+import { calculateRisk, getLevelColor, getLevelBg } from "../lib/risk";
 import { ResultsClient } from "./results-client";
 
 async function ResultsContent({ params }: { params: { [key: string]: string } }) {
-  const make = params.make || "Toyota";
-  const model = params.model || "Hilux";
-  const year = params.year || "2024";
-  const province = params.province || "Gauteng";
-
-  const risk = await calculateRisk(make, model, year, province);
-  const stories = generateStories(make, model, province);
-
+  const risk = await calculateRisk(params.make, params.model, params.year, params.province);
   return (
     <ResultsClient
       risk={risk}
-      stories={stories}
       levelColor={getLevelColor(risk.level)}
       levelBg={getLevelBg(risk.level)}
     />

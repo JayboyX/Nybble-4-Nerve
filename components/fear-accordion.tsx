@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "./icon";
-import type { RiskResult } from "../lib/risk";
-import { getLevelColor } from "../lib/risk";
+import type { RiskResult } from "@/app/lib/risk";
+import { getLevelColor } from "@/app/lib/risk";
 
 function FearBar({ label, pct, delay }: { label: string; pct: number; delay: number }) {
   return (

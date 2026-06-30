@@ -1,34 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "./icon";
-import { posthog } from "./posthog-provider";
 import type { RiskResult } from "@/app/lib/risk";
 
 type FlowState = "initial" | "yes" | "overlay";
 
-const REGRET_STORIES = [
-  (car: string) =>
-    `My ${car} was taken outside Pick n Pay in broad daylight. No comprehensive cover. The bank still made me pay every month.`,
-  (car: string) =>
-    `Three weeks without insurance on my ${car}. It was hijacked at a robot in Randburg. I had to walk home.`,
-  (car: string) =>
-    `Thought nothing would happen to my ${car} in a gated complex. Stolen in 4 minutes flat. No payout.`,
-];
-
-const PROTECTED_STORIES = [
-  (car: string) =>
-    `My ${car} was stolen from the mall parking lot. Insurance paid out in 9 days. Drove off in a newer one.`,
-  (car: string) =>
-    `Tracker picked up my ${car} within 2 hours. Recovered it before it left Joburg. Glad I had cover.`,
-];
-
 const CALL_TIMES = [
-  { label: "Morning", range: "8:00 AM–12:00 PM" },
-  { label: "Afternoon", range: "12:00 PM–5:00 PM" },
-  { label: "Evening", range: "5:00 PM–8:00 PM" },
-  { label: "Any time", range: "Any time during business hours" },
+  { label: "Morning", range: "8:00 AM – 12:00 PM" },
+  { label: "Afternoon", range: "12:00 PM – 5:00 PM" },
+  { label: "Evening", range: "5:00 PM – 8:00 PM" },
+  { label: "Any time", range: "Business hours" },
 ];
 
 const card: React.CSSProperties = {
@@ -61,14 +44,22 @@ const labelStyle: React.CSSProperties = {
   letterSpacing: "0.04em",
 };
 
+function track(event: string, props: Record<string, unknown>) {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ph = (window as any).__posthog;
+    if (ph) ph.capture(event, props);
+  } catch {
+    // non-fatal
+  }
+}
+
 export function ProtectionFlow({ risk }: { risk: RiskResult }) {
   const car = `${risk.make} ${risk.model}`;
 
   const [flowState, setFlowState] = useState<FlowState>("initial");
   const [overlayIntent, setOverlayIntent] = useState<"no" | "notsure">("no");
-  const [storyIdx, setStoryIdx] = useState(0);
 
-  // Form state
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -78,17 +69,10 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
   const [submitted, setSubmitted] = useState(false);
   const [reference, setReference] = useState("");
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStoryIdx((i) => (i + 1) % 3);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
   function openOverlay(intent: "no" | "notsure") {
     setOverlayIntent(intent);
     setFlowState("overlay");
-    posthog.capture("protection_status", { status: intent, make: risk.make, model: risk.model });
+    track("protection_status", { status: intent, make: risk.make, model: risk.model });
   }
 
   function closeOverlay() {
@@ -101,11 +85,6 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
     setConsentTime("");
     setSubmitted(false);
     setReference("");
-  }
-
-  function handlePhoneChange(val: string) {
-    const digits = val.replace(/\D/g, "").slice(0, 10);
-    setPhone(digits);
   }
 
   function handleConsentChange(checked: boolean) {
@@ -124,7 +103,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
       risk_level: risk.level,
       risk_score: risk.score,
       name: name.trim(),
-      phone,
+      phone: phone.replace(/\D/g, "").slice(0, 10),
       preferred_call_time: callTime,
       phone_verified: true,
       consent_given: true,
@@ -134,18 +113,10 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
     };
     try {
       const existing: typeof lead[] = JSON.parse(localStorage.getItem("safecheck_leads") || "[]");
-      // Deduplicate: update existing lead for same phone instead of adding a duplicate
-      const idx = existing.findIndex((l) => l.phone === phone);
-      if (idx >= 0) {
-        existing[idx] = lead;
-      } else {
-        existing.push(lead);
-      }
+      const idx = existing.findIndex((l) => l.phone === lead.phone);
+      if (idx >= 0) existing[idx] = lead; else existing.push(lead);
       localStorage.setItem("safecheck_leads", JSON.stringify(existing));
-    } catch {
-      // storage unavailable
-    }
-    // POST to Supabase via API route — L-005: capture reference number
+    } catch { /* storage unavailable */ }
     try {
       const res = await fetch("/api/leads", {
         method: "POST",
@@ -154,26 +125,13 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
       });
       const data = await res.json();
       if (data.reference) setReference(data.reference);
-    } catch {
-      // non-fatal — lead is in localStorage regardless
-    }
-    posthog.capture("call_scheduled", {
-      make: risk.make, model: risk.model, province: risk.province,
-      call_time: callTime, risk_level: risk.level,
-    });
+    } catch { /* non-fatal */ }
+    track("call_scheduled", { make: risk.make, model: risk.model, province: risk.province, call_time: callTime, risk_level: risk.level });
     setSubmitting(false);
     setSubmitted(true);
   }
 
-  const canSubmit =
-    name.trim().length > 0 &&
-    phone.length === 10 &&
-    callTime !== "" &&
-    consent;
-
-  const accentColor = overlayIntent === "no" ? "var(--color-primary)" : "var(--color-warning)";
-  const accentBg = overlayIntent === "no" ? "var(--color-primary-pale)" : "var(--color-warning-bg)";
-  const accentIcon = overlayIntent === "no" ? "shield-outline" : "help-circle-outline";
+  const canSubmit = name.trim().length > 0 && phone.replace(/\D/g, "").length === 10 && callTime !== "" && consent;
 
   return (
     <>
@@ -191,72 +149,52 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
             <p style={{ fontSize: 15, fontWeight: 700, color: "var(--color-text)", margin: "0 0 4px" }}>
               Is your {car} currently insured?
             </p>
-            <p style={{ fontSize: 12, color: "var(--color-text-muted)", margin: "0 0 16px" }}>
-              Get a free call from a licensed advisor today.
+            <p style={{ fontSize: 12, color: "var(--color-text-muted)", margin: "0 0 18px" }}>
+              Schedule a free call with a licensed advisor.
             </p>
 
-            {/* 3 buttons */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
-              {/* YES */}
-              <button
-                onClick={() => { setFlowState("yes"); posthog.capture("protection_status", { status: "yes", make: risk.make, model: risk.model }); }}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "12px 14px", borderRadius: 8, border: "1px solid var(--color-border)",
-                  background: flowState === "yes" ? "var(--color-success-bg)" : "#fff",
-                  cursor: "pointer", width: "100%", textAlign: "left",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Icon name="checkmark-circle-outline" size={20} color="var(--color-success)" />
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>Yes</div>
-                    <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>I have insurance cover</div>
-                  </div>
-                </div>
-                <Icon name="chevron-forward-outline" size={16} color="var(--color-text-muted)" />
-              </button>
-
-              {/* NO */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {/* NO — primary action */}
               <button
                 onClick={() => openOverlay("no")}
                 style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "12px 14px", borderRadius: 8, border: "none",
-                  background: "var(--color-primary)", cursor: "pointer", width: "100%", textAlign: "left",
+                  width: "100%", padding: "13px 16px", borderRadius: 8, border: "none",
+                  background: "var(--color-primary)", color: "#fff",
+                  fontSize: 14, fontWeight: 700, cursor: "pointer", textAlign: "center",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Icon name="close-circle-outline" size={20} color="#fff" />
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>No</div>
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)" }}>I need protection now</div>
-                  </div>
-                </div>
-                <Icon name="chevron-forward-outline" size={16} color="rgba(255,255,255,0.75)" />
+                No — I need protection
+              </button>
+
+              {/* YES */}
+              <button
+                onClick={() => {
+                  setFlowState("yes");
+                  track("protection_status", { status: "yes", make: risk.make, model: risk.model });
+                }}
+                style={{
+                  width: "100%", padding: "13px 16px", borderRadius: 8,
+                  border: "1px solid var(--color-border)", background: "#fff",
+                  fontSize: 14, fontWeight: 600, color: "var(--color-text)", cursor: "pointer", textAlign: "center",
+                }}
+              >
+                Yes — but I want to compare
               </button>
 
               {/* NOT SURE */}
               <button
                 onClick={() => openOverlay("notsure")}
                 style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "12px 14px", borderRadius: 8, border: "1px solid var(--color-border)",
-                  background: "#fff", cursor: "pointer", width: "100%", textAlign: "left",
+                  width: "100%", padding: "13px 16px", borderRadius: 8,
+                  border: "1px solid var(--color-border)", background: "#fff",
+                  fontSize: 14, fontWeight: 600, color: "var(--color-text)", cursor: "pointer", textAlign: "center",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Icon name="help-circle-outline" size={20} color="var(--color-warning)" />
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>Not sure</div>
-                    <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>Help me check my cover</div>
-                  </div>
-                </div>
-                <Icon name="chevron-forward-outline" size={16} color="var(--color-text-muted)" />
+                Not sure — help me check
               </button>
             </div>
 
-            {/* YES content */}
+            {/* YES expanded */}
             <AnimatePresence>
               {flowState === "yes" && (
                 <motion.div
@@ -264,84 +202,40 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.2 }}
-                  style={{ overflow: "hidden" }}
+                  style={{ overflow: "hidden", marginTop: 12 }}
                 >
                   <div style={{
-                    padding: 16, borderRadius: 8,
-                    background: "var(--color-success-bg)",
-                    border: "1px solid #bbf7d0",
-                    marginBottom: 0,
+                    padding: "14px 16px", borderRadius: 8,
+                    background: "#f9fafb", border: "1px solid var(--color-border)",
                   }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                      <Icon name="shield-checkmark-outline" size={18} color="var(--color-success)" />
-                      <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-success)" }}>
-                        Good — your {car} has some protection.
-                      </span>
-                    </div>
-                    <ul style={{ margin: 0, padding: "0 0 0 16px", display: "flex", flexDirection: "column", gap: 6 }}>
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)", margin: "0 0 8px" }}>
+                      Good — make sure your cover is solid:
+                    </p>
+                    <ul style={{ margin: 0, padding: "0 0 0 16px", display: "flex", flexDirection: "column", gap: 5 }}>
                       {[
-                        "Make sure you have comprehensive cover, not just third-party.",
-                        "Check your excess amount — high excess means big out-of-pocket costs.",
-                        "Confirm your tracker subscription is active and monitored 24/7.",
+                        "Comprehensive cover — not just third-party.",
+                        "Check your excess. High excess = big out-of-pocket costs.",
+                        "Confirm your tracker subscription is active 24/7.",
                       ].map((item) => (
-                        <li key={item} style={{ fontSize: 12, color: "var(--color-text)", lineHeight: 1.5 }}>
+                        <li key={item} style={{ fontSize: 12, color: "var(--color-text-muted)", lineHeight: 1.5 }}>
                           {item}
                         </li>
                       ))}
                     </ul>
+                    <button
+                      onClick={() => openOverlay("notsure")}
+                      style={{
+                        marginTop: 12, padding: "8px 14px", borderRadius: 6,
+                        border: "1px solid var(--color-border)", background: "#fff",
+                        fontSize: 12, fontWeight: 600, color: "var(--color-text)", cursor: "pointer",
+                      }}
+                    >
+                      Compare my cover anyway
+                    </button>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Rotating comment boxes */}
-            {flowState === "initial" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`regret-${storyIdx}`}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.3 }}
-                    style={{
-                      padding: "10px 12px", borderRadius: 8,
-                      background: "var(--color-primary-pale)",
-                      border: "1px solid #fecaca",
-                    }}
-                  >
-                    <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                      <Icon name="warning-outline" size={14} color="var(--color-primary)" />
-                      <p style={{ fontSize: 11, color: "var(--color-primary)", margin: 0, lineHeight: 1.5 }}>
-                        {REGRET_STORIES[storyIdx % REGRET_STORIES.length](car)}
-                      </p>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`protected-${storyIdx}`}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                    style={{
-                      padding: "10px 12px", borderRadius: 8,
-                      background: "var(--color-success-bg)",
-                      border: "1px solid #bbf7d0",
-                    }}
-                  >
-                    <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                      <Icon name="shield-checkmark-outline" size={14} color="var(--color-success)" />
-                      <p style={{ fontSize: 11, color: "var(--color-success)", margin: 0, lineHeight: 1.5 }}>
-                        {PROTECTED_STORIES[storyIdx % PROTECTED_STORIES.length](car)}
-                      </p>
-                    </div>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -356,60 +250,54 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
             transition={{ duration: 0.2 }}
             style={{
               position: "fixed", inset: 0, zIndex: 50,
-              background: "rgba(17, 24, 39, 0.6)",
+              background: "rgba(0,0,0,0.5)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              padding: "16px",
+              padding: 16,
             }}
+            onClick={(e) => { if (e.target === e.currentTarget) closeOverlay(); }}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 0.96, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
+              exit={{ scale: 0.96, opacity: 0 }}
               transition={{ duration: 0.2 }}
               style={{
                 background: "#fff", borderRadius: 12,
-                width: "100%", maxWidth: 480,
-                maxHeight: "calc(100vh - 32px)",
-                overflowY: "auto",
-                boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+                width: "100%", maxWidth: 460,
+                maxHeight: "calc(100vh - 32px)", overflowY: "auto",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
               }}
             >
               {submitted ? (
-                /* Success state */
                 <div style={{ padding: 32, textAlign: "center" }}>
                   <div style={{
-                    width: 56, height: 56, borderRadius: "50%",
-                    background: "var(--color-success-bg)", margin: "0 auto 16px",
+                    width: 52, height: 52, borderRadius: "50%",
+                    background: "#f0fdf4", margin: "0 auto 16px",
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
-                    <Icon name="checkmark-circle" size={32} color="var(--color-success)" />
+                    <Icon name="checkmark-circle" size={30} color="#16a34a" />
                   </div>
                   <h2 style={{ fontSize: 17, fontWeight: 700, color: "var(--color-text)", margin: "0 0 8px" }}>
                     We'll call you, {name.trim()}
                   </h2>
                   <p style={{ fontSize: 13, color: "var(--color-text-muted)", margin: "0 0 16px", lineHeight: 1.6 }}>
-                    A licensed advisor will contact you about your {car} during{" "}
-                    <strong>{callTime}</strong>.
+                    A licensed advisor will contact you about your {car} during <strong>{callTime}</strong>.
                   </p>
-                  <div style={{
-                    padding: "10px 14px", borderRadius: 8,
-                    background: "var(--color-background)",
-                    border: "1px solid var(--color-border)",
-                    fontSize: 11, color: "var(--color-text-muted)",
-                    textAlign: "left", lineHeight: 1.8,
-                  }}>
-                    {reference && (
-                      <div style={{ fontWeight: 700, color: "var(--color-text)", marginBottom: 2 }}>
-                        Reference: {reference}
-                      </div>
-                    )}
-                    POPIA consent recorded at {consentTime ? new Date(consentTime).toLocaleString("en-ZA") : "—"}
-                  </div>
+                  {reference && (
+                    <div style={{
+                      padding: "10px 14px", borderRadius: 8, marginBottom: 12,
+                      background: "#f9fafb", border: "1px solid var(--color-border)",
+                      fontSize: 12, color: "var(--color-text-muted)", textAlign: "left",
+                    }}>
+                      <span style={{ fontWeight: 700, color: "var(--color-text)" }}>Ref: {reference}</span>
+                      <br />
+                      Consent recorded at {new Date(consentTime).toLocaleString("en-ZA")}
+                    </div>
+                  )}
                   <button
                     onClick={closeOverlay}
                     style={{
-                      marginTop: 16, width: "100%", height: 44,
-                      borderRadius: 8, border: "none",
+                      width: "100%", height: 44, borderRadius: 8, border: "none",
                       background: "var(--color-primary)", color: "#fff",
                       fontSize: 14, fontWeight: 600, cursor: "pointer",
                     }}
@@ -421,84 +309,50 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                 <>
                   {/* Header */}
                   <div style={{
-                    padding: "16px 20px 12px",
+                    padding: "16px 20px",
                     borderBottom: "1px solid var(--color-border)",
-                    display: "flex", alignItems: "flex-start", justifyContent: "space-between",
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
                     position: "sticky", top: 0, background: "#fff", zIndex: 1,
                   }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <div style={{
-                        width: 36, height: 36, borderRadius: "50%",
-                        background: accentBg,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0,
-                      }}>
-                        <Icon name={accentIcon} size={20} color={accentColor} />
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: "var(--color-text)" }}>
+                        {overlayIntent === "no" ? "Get protected — free call" : "Let us check your cover"}
                       </div>
-                      <div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: "var(--color-text)" }}>
-                          {overlayIntent === "no" ? "Get your vehicle protected" : "Let us check your cover"}
-                        </div>
-                        <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>
-                          Free call with an FSCA-licensed advisor
-                        </div>
+                      <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>
+                        FSCA-licensed advisor · No obligation
                       </div>
                     </div>
                     <button
                       onClick={closeOverlay}
-                      aria-label="Close form"
-                    style={{
+                      aria-label="Close"
+                      style={{
                         background: "none", border: "none", cursor: "pointer",
-                        padding: 4, color: "var(--color-text-muted)",
-                        display: "flex", alignItems: "center", borderRadius: "50%",
-                        width: 32, height: 32, flexShrink: 0,
+                        padding: 6, color: "var(--color-text-muted)",
+                        display: "flex", alignItems: "center",
                       }}
                     >
                       <Icon name="close-outline" size={20} color="var(--color-text-muted)" />
                     </button>
                   </div>
 
-                  <div style={{ padding: "16px 20px 20px", display: "flex", flexDirection: "column", gap: 14 }}>
-                    {/* Rotating risk story */}
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={`overlay-story-${storyIdx}`}
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.3 }}
-                        style={{
-                          padding: "10px 12px", borderRadius: 8,
-                          background: accentBg,
-                          border: `1px solid ${overlayIntent === "no" ? "#fecaca" : "#fde68a"}`,
-                        }}
-                      >
-                        <p style={{ fontSize: 11, color: accentColor, margin: 0, lineHeight: 1.55 }}>
-                          {REGRET_STORIES[storyIdx % REGRET_STORIES.length](car)}
-                        </p>
-                      </motion.div>
-                    </AnimatePresence>
-
-                    {/* Fear bullets */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                      {[
-                        risk.minutesApart > 0
-                          ? `One ${car} stolen every ${risk.minutesApart} minutes in SA`
-                          : `${car} is among the most targeted vehicles in SA`,
-                        `Only ${risk.recoveredPct}% of stolen vehicles are ever recovered`,
-                        `${risk.gonePct}% are gone permanently — usually across the border`,
-                      ].map((bullet) => (
-                        <div key={bullet} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                          <Icon name="alert-circle-outline" size={13} color={accentColor} />
-                          <span style={{ fontSize: 11, color: "var(--color-text)", lineHeight: 1.5 }}>{bullet}</span>
-                        </div>
-                      ))}
+                  <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: 16 }}>
+                    {/* Risk context */}
+                    <div style={{
+                      padding: "12px 14px", borderRadius: 8,
+                      background: "var(--color-primary-pale)",
+                      border: "1px solid #fecaca",
+                    }}>
+                      <p style={{ fontSize: 12, color: "var(--color-primary)", margin: 0, lineHeight: 1.55, fontWeight: 500 }}>
+                        A {car} is stolen every <strong>{risk.minutesApart} minutes</strong> in SA.
+                        Only <strong>{risk.recoveredPct}%</strong> are ever recovered.
+                      </p>
                     </div>
 
                     {/* Name */}
                     <div>
-                      <label style={labelStyle}>Your name</label>
+                      <label style={labelStyle} htmlFor="pf-name">Your name</label>
                       <input
+                        id="pf-name"
                         type="text"
                         placeholder="Full name"
                         value={name}
@@ -511,12 +365,13 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
 
                     {/* Phone */}
                     <div>
-                      <label style={labelStyle}>Cell number</label>
+                      <label style={labelStyle} htmlFor="pf-phone">Cell number</label>
                       <input
+                        id="pf-phone"
                         type="tel"
                         placeholder="0821234567"
                         value={phone}
-                        onChange={(e) => handlePhoneChange(e.target.value)}
+                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                         style={inputStyle}
                         onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
                         onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")}
@@ -533,9 +388,9 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                             key={t.label}
                             onClick={() => setCallTime(t.label)}
                             style={{
-                              minHeight: 44, padding: "10px 10px", borderRadius: 8, cursor: "pointer",
+                              padding: "10px 12px", borderRadius: 8, cursor: "pointer",
                               border: callTime === t.label
-                                ? `2px solid var(--color-primary)`
+                                ? "2px solid var(--color-primary)"
                                 : "1px solid var(--color-border)",
                               background: callTime === t.label ? "var(--color-primary-pale)" : "#fff",
                               textAlign: "left",
@@ -562,17 +417,10 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                         style={{ marginTop: 2, flexShrink: 0, accentColor: "var(--color-primary)", cursor: "pointer" }}
                       />
                       <label htmlFor="popia-consent" style={{ fontSize: 11, color: "var(--color-text-muted)", lineHeight: 1.55, cursor: "pointer" }}>
-                        I consent to being contacted by FSCA-licensed providers about vehicle insurance. I have read and agree to the{" "}
-                        <a
-                          href="/privacy"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          style={{ color: "var(--color-primary)", textDecoration: "none" }}
-                        >
+                        I consent to being contacted by FSCA-licensed providers about vehicle insurance. I've read the{" "}
+                        <a href="/privacy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} style={{ color: "var(--color-primary)", textDecoration: "none" }}>
                           Privacy Policy
-                        </a>
-                        .
+                        </a>.
                       </label>
                     </div>
 
@@ -590,23 +438,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                         display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                       }}
                     >
-                      {submitting ? (
-                        <>
-                          <span style={{
-                            width: 14, height: 14, borderRadius: "50%",
-                            border: "2px solid rgba(255,255,255,0.3)",
-                            borderTopColor: "#fff",
-                            display: "inline-block",
-                            animation: "spin 0.7s linear infinite",
-                          }} />
-                          Submitting...
-                        </>
-                      ) : (
-                        <>
-                          <Icon name="call-outline" size={16} color={canSubmit ? "#fff" : "var(--color-text-muted)"} />
-                          Request My Free Call
-                        </>
-                      )}
+                      {submitting ? "Submitting..." : "Request My Free Call"}
                     </button>
                   </div>
                 </>

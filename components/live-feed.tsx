@@ -100,7 +100,7 @@ export function LiveFeed({ initialStories }: { initialStories: Story[] }) {
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+      <div className="live-feed-header">
         <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--color-text)", margin: 0 }}>
           Live Feed
         </h2>

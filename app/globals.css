@@ -156,6 +156,16 @@ body {
   }
 }
 
+/* LiveFeed tab row — stack on mobile */
+.live-feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 /* Hero responsive */
 .hero-title {
   font-size: 28px;

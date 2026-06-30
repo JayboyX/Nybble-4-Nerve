@@ -513,7 +513,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                             key={t.label}
                             onClick={() => setCallTime(t.label)}
                             style={{
-                              padding: "9px 10px", borderRadius: 8, cursor: "pointer",
+                              minHeight: 44, padding: "10px 10px", borderRadius: 8, cursor: "pointer",
                               border: callTime === t.label
                                 ? `2px solid var(--color-primary)`
                                 : "1px solid var(--color-border)",
@@ -524,7 +524,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                             <div style={{ fontSize: 12, fontWeight: 600, color: callTime === t.label ? "var(--color-primary)" : "var(--color-text)" }}>
                               {t.label}
                             </div>
-                            <div style={{ fontSize: 10, color: "var(--color-text-muted)", marginTop: 1 }}>
+                            <div style={{ fontSize: 11, color: "var(--color-text-muted)", marginTop: 1 }}>
                               {t.range}
                             </div>
                           </button>

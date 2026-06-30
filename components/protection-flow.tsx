@@ -110,6 +110,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
   async function handleVerify() {
     if (phone.length !== 10 || verifying || phoneVerified) return;
     setVerifying(true);
+    // TODO: Replace with Twilio Lookup API — await fetch(`/api/verify-phone?number=${phone}`)
     await new Promise((r) => setTimeout(r, 2500));
     setVerifying(false);
     setPhoneVerified(true);
@@ -125,20 +126,30 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
     const lead = {
       vehicle_make: risk.make,
       vehicle_model: risk.model,
-      vehicle_year: risk.year,
+      vehicle_year: String(risk.year),
       province: risk.province,
+      risk_level: risk.level,
+      risk_score: risk.score,
       name: name.trim(),
       phone,
-      call_time: callTime,
-      intent: overlayIntent,
+      preferred_call_time: callTime,
+      phone_verified: phoneVerified,
       consent_given: true,
       consent_timestamp: consentTime,
       consent_method: "web_checkbox",
-      submitted_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     };
     try {
-      const existing = JSON.parse(localStorage.getItem("safecheck_leads") || "[]");
-      localStorage.setItem("safecheck_leads", JSON.stringify([...existing, lead]));
+      const existing: typeof lead[] = JSON.parse(localStorage.getItem("safecheck_leads") || "[]");
+      // Deduplicate: update existing lead for same phone instead of adding a duplicate
+      const idx = existing.findIndex((l) => l.phone === phone);
+      if (idx >= 0) {
+        existing[idx] = lead;
+      } else {
+        existing.push(lead);
+      }
+      localStorage.setItem("safecheck_leads", JSON.stringify(existing));
+      // TODO: POST lead to backend webhook — await fetch("/api/leads", { method: "POST", body: JSON.stringify(lead) })
     } catch {
       // storage unavailable
     }

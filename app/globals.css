@@ -64,6 +64,28 @@ body {
   100% { transform: translateX(-50%); }
 }
 
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.scanline-host {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanline-host::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(transparent, rgba(255,255,255,0.03), transparent);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .animate-ticker {
   animation: ticker 30s linear infinite;
 }

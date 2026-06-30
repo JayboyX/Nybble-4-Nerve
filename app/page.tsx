@@ -3,6 +3,9 @@ import { Ticker } from "@/components/ticker";
 import { HeroSection } from "@/components/hero-section";
 import { CheckCtaButton } from "@/components/check-cta-button";
 import { Icon, IonIconLoader } from "@/components/icon";
+import { LiveFeed } from "@/components/live-feed";
+import { StolenTodayCounter, ChecksTodayCounter } from "@/components/live-stats";
+import { ProvinceBars } from "@/components/province-bars";
 import {
   getStats,
   getTopStolen,
@@ -25,11 +28,6 @@ const sectionPad: React.CSSProperties = {
 };
 
 
-const muted: React.CSSProperties = {
-  fontSize: 12,
-  color: "var(--color-text-muted)",
-  lineHeight: 1.7,
-};
 
 export default async function Home() {
   const [stats, topStolen, provinces, stories] = await Promise.all([
@@ -69,9 +67,31 @@ export default async function Home() {
       {/* Live Stats */}
       <section style={{ background: "var(--color-background)", borderBottom: "1px solid var(--color-border)" }}>
         <div style={{ ...sectionPad, padding: "48px 20px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
+            {/* Stolen Today — live incrementing */}
+            <div style={{ ...card, padding: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <Icon name="alert-circle-outline" size={16} color="var(--color-text-muted)" />
+                <span style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 500 }}>Stolen Today</span>
+              </div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: "var(--color-text)" }}>
+                <StolenTodayCounter initial={stats.stolen_today} />
+              </div>
+            </div>
+
+            {/* Checks Today — time-seeded */}
+            <div style={{ ...card, padding: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <Icon name="shield-checkmark-outline" size={16} color="var(--color-text-muted)" />
+                <span style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 500 }}>Checks Today</span>
+              </div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: "var(--color-text)" }}>
+                <ChecksTodayCounter />
+              </div>
+            </div>
+
+            {/* Static counters */}
             {[
-              { label: "Stolen Today", value: stats.stolen_today, suffix: "", icon: "alert-circle-outline" },
               { label: "Annual Thefts", value: stats.annual_thefts, suffix: "", icon: "car-outline" },
               { label: "Recovery Rate", value: Number(stats.recovery_rate_pct), suffix: "%", icon: "locate-outline" },
               { label: "Avg. Time to Border", value: stats.time_to_border_min, suffix: " min", icon: "time-outline" },
@@ -100,42 +120,8 @@ export default async function Home() {
             {/* Stories + Sidebar row on desktop */}
             <div className="content-grid">
 
-              {/* Stories */}
-              <div>
-                <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--color-text)", margin: "0 0 20px" }}>
-                  Real Stories, Real Losses
-                </h2>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {stories.map((story, i) => (
-                    <div key={i} style={{ ...card, padding: 20 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                        <span
-                          style={{
-                            padding: "2px 10px",
-                            borderRadius: 20,
-                            fontSize: 11,
-                            fontWeight: 600,
-                            background: "var(--color-primary-pale)",
-                            color: "var(--color-primary)",
-                          }}
-                        >
-                          {story.location}
-                        </span>
-                        <span style={{ fontSize: 11, color: "var(--color-text-muted)" }}>
-                          {story.car}
-                        </span>
-                      </div>
-                      <p style={{ fontSize: 13, color: "var(--color-text)", lineHeight: 1.65, margin: 0 }}>
-                        {story.summary}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                <p style={{ ...muted, marginTop: 16 }}>
-                  Based on actual claim rejection patterns reported to SAIA. Names
-                  withheld for privacy. These are representative examples.
-                </p>
-              </div>
+              {/* Live Feed */}
+              <LiveFeed initialStories={stories} />
 
               {/* Sidebar */}
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -186,44 +172,7 @@ export default async function Home() {
                   <h3 style={{ fontSize: 14, fontWeight: 700, color: "var(--color-text)", margin: "0 0 16px" }}>
                     Province Risk Levels
                   </h3>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {provinces.map((prov) => (
-                      <div key={prov.name}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginBottom: 4 }}>
-                          <span style={{ color: "var(--color-text)" }}>{prov.name}</span>
-                          <span
-                            style={{
-                              fontWeight: 600,
-                              color:
-                                prov.level === "Critical"
-                                  ? "var(--color-primary)"
-                                  : prov.level === "High"
-                                  ? "var(--color-warning)"
-                                  : "var(--color-text-muted)",
-                            }}
-                          >
-                            {prov.level}
-                          </span>
-                        </div>
-                        <div style={{ height: 6, borderRadius: 3, background: "var(--color-border)", overflow: "hidden" }}>
-                          <div
-                            style={{
-                              height: "100%",
-                              borderRadius: 3,
-                              width: `${prov.pct}%`,
-                              background:
-                                prov.level === "Critical"
-                                  ? "var(--color-primary)"
-                                  : prov.level === "High"
-                                  ? "var(--color-warning)"
-                                  : "var(--color-text-muted)",
-                              transition: "width 0.3s ease",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <ProvinceBars provinces={provinces} />
                 </div>
               </div>
             </div>

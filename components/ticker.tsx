@@ -1,8 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Icon } from "./icon";
 
-const INCIDENTS = [
+const BASE_INCIDENTS = [
   "Toyota Hilux stolen — Midrand, Gauteng — 14 min ago",
   "VW Polo hijacked — Berea, Durban — 22 min ago",
   "Ford Ranger recovered (stripped) — Mamelodi, Pretoria — 38 min ago",
@@ -13,27 +14,63 @@ const INCIDENTS = [
   "Kia Seltos stolen — Centurion, Gauteng — 2hr ago",
 ];
 
+const DYNAMIC_VEHICLES = [
+  "Toyota Corolla", "VW Golf", "Renault Kiger", "Haval H6",
+  "Suzuki Swift", "Ford Fiesta", "Nissan Magnite", "Kia Sportage",
+  "Toyota Urban Cruiser", "Mercedes C200", "BMW X3", "Hyundai i20",
+];
+
+const DYNAMIC_LOCATIONS = [
+  "Roodepoort, Gauteng", "Pinetown, KZN", "Bellville, Cape Town",
+  "Polokwane, Limpopo", "Boksburg, Gauteng", "East London, EC",
+  "Alberton, Gauteng", "Mitchells Plain, Cape Town", "Umlazi, KZN",
+  "Soshanguve, Pretoria", "Krugersdorp, Gauteng", "Port Elizabeth, EC",
+];
+
+const INCIDENT_TYPES = ["stolen", "hijacked", "recovered (stripped)", "reported missing"];
+
+let minAgo = 3;
+
+function generateIncident(): string {
+  const vehicle = DYNAMIC_VEHICLES[Math.floor(Math.random() * DYNAMIC_VEHICLES.length)];
+  const location = DYNAMIC_LOCATIONS[Math.floor(Math.random() * DYNAMIC_LOCATIONS.length)];
+  const type = INCIDENT_TYPES[Math.floor(Math.random() * INCIDENT_TYPES.length)];
+  const time = minAgo <= 1 ? "just now" : `${minAgo} min ago`;
+  minAgo = Math.max(1, minAgo - Math.floor(Math.random() * 2));
+  return `${vehicle} ${type} — ${location} — ${time}`;
+}
+
 export function Ticker() {
-  const doubled = [...INCIDENTS, ...INCIDENTS];
+  const [items, setItems] = useState<string[]>(BASE_INCIDENTS);
+
+  // Add 2-3 new incidents every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newItems = [generateIncident(), generateIncident()];
+      if (Math.random() > 0.5) newItems.push(generateIncident());
+      setItems((prev) => [...newItems, ...prev].slice(0, 20));
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const doubled = [...items, ...items];
 
   return (
-    <div style={{ width: "100%", overflow: "hidden", background: "#111827", color: "#f9fafb" }}>
-      <div
-        style={{
-          padding: "6px 16px",
-          fontSize: 11,
-          color: "#9ca3af",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-        }}
-      >
+    <div className="scanline-host" style={{ width: "100%", overflow: "hidden", background: "#111827", color: "#f9fafb" }}>
+      <div style={{
+        padding: "6px 16px", fontSize: 11, color: "#9ca3af",
+        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        display: "flex", alignItems: "center", gap: 6,
+      }}>
         <Icon name="information-circle-outline" size={14} color="#9ca3af" />
         Representative crime scenarios — not live incident reports
       </div>
       <div style={{ position: "relative", height: 32, display: "flex", alignItems: "center" }}>
-        <div className="animate-ticker" style={{ display: "flex", whiteSpace: "nowrap", gap: 48, fontSize: 13 }}>
+        <div
+          key={items.length}
+          className="animate-ticker"
+          style={{ display: "flex", whiteSpace: "nowrap", gap: 48, fontSize: 13 }}
+        >
           {doubled.map((text, i) => (
             <span key={i} style={{ display: "inline-block", padding: "0 16px" }}>
               {text}

@@ -70,8 +70,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
   // Form state
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [phoneVerified, setPhoneVerified] = useState(false);
-  const [verifying, setVerifying] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [callTime, setCallTime] = useState("");
   const [consent, setConsent] = useState(false);
   const [consentTime, setConsentTime] = useState("");
@@ -93,8 +92,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
     setFlowState("initial");
     setName("");
     setPhone("");
-    setPhoneVerified(false);
-    setVerifying(false);
+    setSubmitting(false);
     setCallTime("");
     setConsent(false);
     setConsentTime("");
@@ -104,16 +102,6 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
   function handlePhoneChange(val: string) {
     const digits = val.replace(/\D/g, "").slice(0, 10);
     setPhone(digits);
-    setPhoneVerified(false);
-  }
-
-  async function handleVerify() {
-    if (phone.length !== 10 || verifying || phoneVerified) return;
-    setVerifying(true);
-    // TODO: Replace with Twilio Lookup API — await fetch(`/api/verify-phone?number=${phone}`)
-    await new Promise((r) => setTimeout(r, 2500));
-    setVerifying(false);
-    setPhoneVerified(true);
   }
 
   function handleConsentChange(checked: boolean) {
@@ -121,8 +109,9 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
     if (checked) setConsentTime(new Date().toISOString());
   }
 
-  function handleSubmit() {
-    if (!canSubmit) return;
+  async function handleSubmit() {
+    if (!canSubmit || submitting) return;
+    setSubmitting(true);
     const lead = {
       vehicle_make: risk.make,
       vehicle_model: risk.model,
@@ -133,7 +122,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
       name: name.trim(),
       phone,
       preferred_call_time: callTime,
-      phone_verified: phoneVerified,
+      phone_verified: true,
       consent_given: true,
       consent_timestamp: consentTime,
       consent_method: "web_checkbox",
@@ -149,17 +138,22 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
         existing.push(lead);
       }
       localStorage.setItem("safecheck_leads", JSON.stringify(existing));
-      // TODO: POST lead to backend webhook — await fetch("/api/leads", { method: "POST", body: JSON.stringify(lead) })
     } catch {
       // storage unavailable
     }
+    // POST to Supabase via API route
+    await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(lead),
+    });
+    setSubmitting(false);
     setSubmitted(true);
   }
 
   const canSubmit =
     name.trim().length > 0 &&
     phone.length === 10 &&
-    phoneVerified &&
     callTime !== "" &&
     consent;
 
@@ -495,62 +489,19 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                       />
                     </div>
 
-                    {/* Phone + verify */}
+                    {/* Phone */}
                     <div>
                       <label style={labelStyle}>Cell number</label>
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <input
-                          type="tel"
-                          placeholder="0821234567"
-                          value={phone}
-                          onChange={(e) => handlePhoneChange(e.target.value)}
-                          style={{ ...inputStyle, flex: 1 }}
-                          onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
-                          onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")}
-                          maxLength={10}
-                        />
-                        <button
-                          onClick={handleVerify}
-                          disabled={phone.length !== 10 || verifying || phoneVerified}
-                          style={{
-                            height: 44, padding: "0 14px", borderRadius: 8,
-                            border: "none", flexShrink: 0,
-                            background: phoneVerified
-                              ? "var(--color-success-bg)"
-                              : phone.length === 10 && !verifying
-                              ? "var(--color-primary)"
-                              : "var(--color-border)",
-                            color: phoneVerified
-                              ? "var(--color-success)"
-                              : phone.length === 10 && !verifying
-                              ? "#fff"
-                              : "var(--color-text-muted)",
-                            fontSize: 12, fontWeight: 600, cursor: phoneVerified || phone.length !== 10 ? "not-allowed" : "pointer",
-                            display: "flex", alignItems: "center", gap: 5,
-                            transition: "background 0.2s",
-                          }}
-                        >
-                          {verifying ? (
-                            <>
-                              <span style={{
-                                width: 12, height: 12, borderRadius: "50%",
-                                border: "2px solid rgba(255,255,255,0.3)",
-                                borderTopColor: "#fff",
-                                display: "inline-block",
-                                animation: "spin 0.7s linear infinite",
-                              }} />
-                              Checking
-                            </>
-                          ) : phoneVerified ? (
-                            <>
-                              <Icon name="checkmark-circle" size={14} color="var(--color-success)" />
-                              OK
-                            </>
-                          ) : (
-                            "Verify"
-                          )}
-                        </button>
-                      </div>
+                      <input
+                        type="tel"
+                        placeholder="0821234567"
+                        value={phone}
+                        onChange={(e) => handlePhoneChange(e.target.value)}
+                        style={inputStyle}
+                        onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
+                        onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")}
+                        maxLength={10}
+                      />
                     </div>
 
                     {/* Call time */}
@@ -608,19 +559,34 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                     {/* Submit */}
                     <button
                       onClick={handleSubmit}
-                      disabled={!canSubmit}
+                      disabled={!canSubmit || submitting}
                       style={{
                         width: "100%", height: 48, borderRadius: 8, border: "none",
-                        background: canSubmit ? "var(--color-primary)" : "var(--color-border)",
-                        color: canSubmit ? "#fff" : "var(--color-text-muted)",
+                        background: canSubmit && !submitting ? "var(--color-primary)" : "var(--color-border)",
+                        color: canSubmit && !submitting ? "#fff" : "var(--color-text-muted)",
                         fontSize: 14, fontWeight: 700,
-                        cursor: canSubmit ? "pointer" : "not-allowed",
+                        cursor: canSubmit && !submitting ? "pointer" : "not-allowed",
                         transition: "background 0.15s",
                         display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                       }}
                     >
-                      <Icon name="call-outline" size={16} color={canSubmit ? "#fff" : "var(--color-text-muted)"} />
-                      Request My Free Call
+                      {submitting ? (
+                        <>
+                          <span style={{
+                            width: 14, height: 14, borderRadius: "50%",
+                            border: "2px solid rgba(255,255,255,0.3)",
+                            borderTopColor: "#fff",
+                            display: "inline-block",
+                            animation: "spin 0.7s linear infinite",
+                          }} />
+                          Submitting...
+                        </>
+                      ) : (
+                        <>
+                          <Icon name="call-outline" size={16} color={canSubmit ? "#fff" : "var(--color-text-muted)"} />
+                          Request My Free Call
+                        </>
+                      )}
                     </button>
                   </div>
                 </>

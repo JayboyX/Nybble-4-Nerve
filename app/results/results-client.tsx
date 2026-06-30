@@ -6,51 +6,33 @@ import { Icon, IonIconLoader } from "@/components/icon";
 import { SocialProofNotifications } from "@/components/social-proof";
 import { ProtectionFlow } from "@/components/protection-flow";
 import { ShareModal } from "@/components/share-modal";
-import { posthog } from "@/components/posthog-provider";
 import type { RiskResult } from "@/app/lib/risk";
 
-const card: React.CSSProperties = {
-  background: "#fff",
-  borderRadius: 10,
-  border: "1px solid var(--color-border)",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-};
+function track(event: string, props: Record<string, unknown>) {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const ph = (window as any).__posthog;
+    if (ph) ph.capture(event, props);
+  } catch { /* non-fatal */ }
+}
 
 function RiskMeter({ score, color }: { score: number; color: string }) {
   const filled = Math.round(score / 10);
   return (
-    <div style={{ display: "flex", gap: 3 }} role="meter" aria-label={`Risk score ${score} out of 100`} aria-valuenow={score} aria-valuemin={0} aria-valuemax={100}>
+    <div style={{ display: "flex", gap: 4 }} role="meter" aria-label={`Risk score ${score} out of 100`} aria-valuenow={score} aria-valuemin={0} aria-valuemax={100}>
       {Array.from({ length: 10 }, (_, i) => (
         <motion.div
           key={i}
           initial={{ scaleY: 0 }}
           animate={{ scaleY: 1 }}
-          transition={{ delay: 0.3 + i * 0.06, duration: 0.2 }}
+          transition={{ delay: 0.4 + i * 0.06, duration: 0.2 }}
           style={{
-            width: "100%",
-            height: 8,
-            borderRadius: 2,
-            backgroundColor: i < filled ? color : "var(--color-border)",
+            flex: 1, height: 6, borderRadius: 3,
+            backgroundColor: i < filled ? color : "rgba(255,255,255,0.2)",
             transformOrigin: "bottom",
           }}
         />
       ))}
-    </div>
-  );
-}
-
-function StatTile({ label, value, icon }: { label: string; value: string; icon: string }) {
-  return (
-    <div style={{ ...card, padding: "16px", textAlign: "center" }}>
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 6 }}>
-        <Icon name={icon} size={18} color="var(--color-text-muted)" />
-      </div>
-      <div style={{ fontSize: 22, fontWeight: 700, color: "var(--color-text)", marginBottom: 2 }}>
-        {value}
-      </div>
-      <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>
-        {label}
-      </div>
     </div>
   );
 }
@@ -67,9 +49,8 @@ export function ResultsClient({
   const [showShare, setShowShare] = useState(false);
   const car = `${risk.make} ${risk.model}`;
 
-  // L-008: Track car_checked event
   useEffect(() => {
-    posthog.capture("car_checked", {
+    track("car_checked", {
       make: risk.make, model: risk.model, year: risk.year,
       province: risk.province, risk_level: risk.level, risk_score: risk.score,
     });
@@ -80,24 +61,20 @@ export function ResultsClient({
       <div style={{ minHeight: "100vh", background: "#f9fafb" }}>
         <IonIconLoader />
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "64px 20px", textAlign: "center" }}>
-          <div style={{ ...card, padding: 40 }}>
-            <Icon name="alert-circle-outline" size={40} color="var(--color-text-muted)" />
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--color-text)", margin: "16px 0 8px" }}>
+          <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #e5e7eb", padding: 40 }}>
+            <Icon name="alert-circle-outline" size={40} color="#6b7280" />
+            <h1 style={{ fontSize: 20, fontWeight: 700, color: "#111827", margin: "16px 0 8px" }}>
               No Data Available
             </h1>
-            <p style={{ fontSize: 14, color: "var(--color-text-muted)", margin: "0 0 24px", maxWidth: 400, marginLeft: "auto", marginRight: "auto" }}>
-              We don't have theft statistics for the {car} yet. We're constantly expanding our database.
+            <p style={{ fontSize: 14, color: "#6b7280", margin: "0 0 24px", maxWidth: 400, marginLeft: "auto", marginRight: "auto" }}>
+              We don't have theft statistics for the {car} yet.
             </p>
-            <a
-              href="/"
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                padding: "10px 24px", borderRadius: 8, border: "none",
-                backgroundColor: "var(--color-primary)", color: "#fff",
-                fontSize: 14, fontWeight: 600, textDecoration: "none",
-              }}
-            >
-              <Icon name="arrow-back-outline" size={16} color="#fff" />
+            <a href="/" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "10px 24px", borderRadius: 8, border: "none",
+              backgroundColor: "#DC2626", color: "#fff",
+              fontSize: 14, fontWeight: 600, textDecoration: "none",
+            }}>
               Try Another Vehicle
             </a>
           </div>
@@ -111,105 +88,121 @@ export function ResultsClient({
       <IonIconLoader />
       <SocialProofNotifications />
 
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "24px 20px 100px" }}>
-        <p style={{ fontSize: 11, color: "var(--color-text-muted)", margin: "0 0 16px", lineHeight: 1.6 }}>
-          Based on actual claim rejection patterns reported to SAIA. Names withheld for privacy. These are representative examples. Not affiliated with SAPS or any government agency.
+      <div style={{ maxWidth: 980, margin: "0 auto", padding: "28px 20px 80px" }}>
+
+        {/* Disclaimer */}
+        <p style={{ fontSize: 11, color: "#9ca3af", margin: "0 0 20px", lineHeight: 1.6 }}>
+          Based on actual SAIA claim data. Not affiliated with SAPS or any government agency.
         </p>
+
         <div className="results-grid">
-          {/* Left — Risk Card */}
+
+          {/* ── Left: Risk Card ── */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            style={{ ...card, padding: 24, borderLeft: `4px solid ${levelColor}` }}
+            transition={{ duration: 0.35 }}
+            style={{ borderRadius: 12, overflow: "hidden", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}
           >
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
-              <div>
-                <p style={{ fontSize: 12, color: "var(--color-text-muted)", margin: "0 0 2px" }}>Risk Assessment</p>
-                <p style={{ fontSize: 20, fontWeight: 700, color: "var(--color-text)", margin: 0 }}>{car} {risk.year}</p>
-                <p style={{ fontSize: 13, color: "var(--color-text-muted)", margin: "2px 0 0" }}>{risk.province}</p>
-              </div>
-              <div style={{
-                padding: "4px 12px", borderRadius: 20,
-                backgroundColor: levelBg, color: levelColor,
-                fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", flexShrink: 0,
-              }}>
-                {risk.level}
-              </div>
-            </div>
-
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 12 }}>
-              <span style={{ fontSize: 48, fontWeight: 800, color: levelColor, lineHeight: 1 }}>{risk.score}</span>
-              <span style={{ fontSize: 16, color: "var(--color-text-muted)" }}>/100</span>
-              {risk.trend !== "STABLE" && (
-                <span style={{
-                  marginLeft: 8, padding: "3px 10px", borderRadius: 20,
-                  backgroundColor: levelBg, color: levelColor,
-                  fontSize: 11, fontWeight: 600,
-                  display: "inline-flex", alignItems: "center", gap: 4,
+            {/* Dark header */}
+            <div style={{ background: "#1E3A5F", padding: "28px 28px 24px" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
+                <div>
+                  <p style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    Risk Assessment · {risk.province}
+                  </p>
+                  <h1 style={{ fontSize: 20, fontWeight: 800, color: "#fff", margin: 0, lineHeight: 1.2 }}>
+                    {car}
+                    <span style={{ fontWeight: 400, color: "rgba(255,255,255,0.5)", marginLeft: 8 }}>{risk.year}</span>
+                  </h1>
+                </div>
+                <div style={{
+                  padding: "4px 12px", borderRadius: 20, flexShrink: 0,
+                  background: levelBg, color: levelColor,
+                  fontSize: 11, fontWeight: 700, letterSpacing: "0.06em",
                 }}>
-                  <Icon name="trending-up-outline" size={12} color={levelColor} />
-                  {risk.trend} +{risk.trendPct}%
-                </span>
-              )}
+                  {risk.level}
+                </div>
+              </div>
+
+              {/* Score */}
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 16 }}>
+                <span style={{ fontSize: 64, fontWeight: 800, color: "#fff", lineHeight: 1 }}>{risk.score}</span>
+                <span style={{ fontSize: 18, color: "rgba(255,255,255,0.4)", fontWeight: 300 }}>/100</span>
+                {risk.trend !== "STABLE" && (
+                  <span style={{
+                    marginLeft: 4, padding: "3px 10px", borderRadius: 20,
+                    background: "rgba(220,38,38,0.2)", color: "#fca5a5",
+                    fontSize: 11, fontWeight: 600,
+                    display: "inline-flex", alignItems: "center", gap: 4,
+                  }}>
+                    <Icon name="trending-up-outline" size={12} color="#fca5a5" />
+                    {risk.trend} +{risk.trendPct}%
+                  </span>
+                )}
+              </div>
+
+              <RiskMeter score={risk.score} color={levelColor} />
             </div>
 
-            <RiskMeter score={risk.score} color={levelColor} />
-
-            {/* Stats grid inside the card */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginTop: 20, paddingTop: 20, borderTop: "1px solid var(--color-border)" }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "var(--color-text)" }}>{risk.stolenPerYear.toLocaleString()}</div>
-                <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>Stolen / yr</div>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "var(--color-text)" }}>{risk.recoveredPct}%</div>
-                <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>Recovered</div>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "var(--color-text)" }}>{risk.gonePct}%</div>
-                <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>Gone forever</div>
-              </div>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "var(--color-text)" }}>{risk.minutesApart}</div>
-                <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>Min apart</div>
-              </div>
+            {/* Stats row */}
+            <div style={{
+              background: "#fff",
+              display: "grid", gridTemplateColumns: "repeat(4, 1fr)",
+              borderTop: "none",
+            }}>
+              {[
+                { value: risk.stolenPerYear.toLocaleString(), label: "Stolen / yr" },
+                { value: `${risk.recoveredPct}%`, label: "Recovered" },
+                { value: `${risk.gonePct}%`, label: "Gone forever" },
+                { value: `${risk.minutesApart}`, label: "Min apart" },
+              ].map((stat, i, arr) => (
+                <div key={stat.label} style={{
+                  padding: "20px 0", textAlign: "center",
+                  borderRight: i < arr.length - 1 ? "1px solid #f3f4f6" : "none",
+                }}>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: "#111827", marginBottom: 2 }}>{stat.value}</div>
+                  <div style={{ fontSize: 11, color: "#9ca3af", fontWeight: 500 }}>{stat.label}</div>
+                </div>
+              ))}
             </div>
           </motion.div>
 
-          {/* Right — Protection Flow */}
+          {/* ── Right: Protection + Summary ── */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            style={{ display: "flex", flexDirection: "column", gap: 16 }}
+            transition={{ duration: 0.35, delay: 0.1 }}
+            style={{ display: "flex", flexDirection: "column", gap: 14 }}
           >
             <ProtectionFlow risk={risk} />
 
             {/* Risk summary */}
-            <div style={{ ...card, padding: 20 }}>
-              <p style={{ fontSize: 13, color: "var(--color-text)", lineHeight: 1.7, margin: 0 }}>
-                In {risk.province}, a <strong>{car}</strong> is stolen every <strong>{risk.minutesApart} minutes</strong>.
-                Only <strong>{risk.recoveredPct}%</strong> are recovered.
+            <div style={{
+              background: "#fff", borderRadius: 10,
+              border: "1px solid #e5e7eb", padding: "16px 20px",
+            }}>
+              <p style={{ fontSize: 13, color: "#374151", lineHeight: 1.75, margin: 0 }}>
+                In <strong>{risk.province}</strong>, a <strong>{car}</strong> is stolen every{" "}
+                <strong>{risk.minutesApart} minutes</strong>. Only{" "}
+                <strong style={{ color: "#DC2626" }}>{risk.recoveredPct}%</strong> are recovered.
                 {risk.trend !== "STABLE" && (
-                  <> Theft is <strong>{risk.trend.toLowerCase()}</strong> at <strong>+{risk.trendPct}%</strong> year-on-year.</>
+                  <> Theft is <strong style={{ color: "#DC2626" }}>{risk.trend.toLowerCase()}</strong> at +{risk.trendPct}% this year.</>
                 )}
               </p>
             </div>
           </motion.div>
         </div>
 
-        {/* Share CTA — J-005 */}
+        {/* ── Share CTA ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-          className="pulse-border"
+          transition={{ duration: 0.35, delay: 0.25 }}
           style={{
             marginTop: 20,
+            background: "#1E3A5F",
             borderRadius: 10,
-            border: "2px solid var(--color-primary)",
-            background: "var(--color-primary-pale)",
             padding: "20px 24px",
             display: "flex",
             alignItems: "center",
@@ -219,26 +212,26 @@ export function ResultsClient({
           }}
         >
           <div>
-            <p style={{ fontSize: 14, fontWeight: 700, color: "var(--color-primary)", margin: "0 0 2px" }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "#fff", margin: "0 0 2px" }}>
               Know someone with a {car}?
             </p>
-            <p style={{ fontSize: 12, color: "var(--color-text-muted)", margin: 0 }}>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", margin: 0 }}>
               Send them this risk alert — it could save their car.
             </p>
           </div>
           <button
-            onClick={() => { setShowShare(true); posthog.capture("share_clicked", { make: risk.make, model: risk.model }); }}
-            className="heartbeat"
+            onClick={() => { setShowShare(true); track("share_clicked", { make: risk.make, model: risk.model }); }}
             style={{
               display: "flex", alignItems: "center", gap: 8,
-              padding: "12px 20px", borderRadius: 8, border: "none",
-              background: "var(--color-primary)", color: "#fff",
-              fontSize: 14, fontWeight: 700, cursor: "pointer",
-              flexShrink: 0,
+              padding: "11px 20px", borderRadius: 8,
+              border: "1px solid rgba(255,255,255,0.2)",
+              background: "rgba(255,255,255,0.1)", color: "#fff",
+              fontSize: 13, fontWeight: 700, cursor: "pointer", flexShrink: 0,
+              backdropFilter: "blur(4px)",
             }}
           >
-            <Icon name="warning-outline" size={16} color="#fff" />
-            WARN THEM NOW
+            <Icon name="logo-whatsapp" size={16} color="#fff" />
+            Share Risk Alert
           </button>
         </motion.div>
       </div>

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Icon, IonIconLoader } from "@/components/icon";
 import { SocialProofNotifications } from "@/components/social-proof";
+import { ProtectionFlow } from "@/components/protection-flow";
 import type { RiskResult } from "@/app/lib/risk";
 
 const card: React.CSSProperties = {
@@ -161,62 +162,26 @@ export function ResultsClient({
             </div>
           </motion.div>
 
-          {/* Right — CTA + Context */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {/* Protection CTA */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              style={{ ...card, padding: 24 }}
-            >
-              <p style={{ fontSize: 16, fontWeight: 700, color: "var(--color-text)", margin: "0 0 4px" }}>
-                Is your {car} currently insured?
-              </p>
-              <p style={{ fontSize: 13, color: "var(--color-text-muted)", margin: "0 0 16px" }}>
-                Schedule a free call with a licensed advisor.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {["No — I need protection", "Yes — but I want to compare", "Not sure — help me check"].map((opt, i) => (
-                  <a
-                    key={opt}
-                    href="#lead-form"
-                    style={{
-                      display: "block",
-                      padding: "12px 16px",
-                      borderRadius: 8,
-                      border: i === 0 ? "none" : "1px solid var(--color-border)",
-                      backgroundColor: i === 0 ? "var(--color-primary)" : "#fff",
-                      color: i === 0 ? "#fff" : "var(--color-text)",
-                      fontSize: 14,
-                      fontWeight: 600,
-                      textAlign: "center",
-                      textDecoration: "none",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {opt}
-                  </a>
-                ))}
-              </div>
-            </motion.div>
+          {/* Right — Protection Flow */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+            style={{ display: "flex", flexDirection: "column", gap: 16 }}
+          >
+            <ProtectionFlow risk={risk} />
 
             {/* Risk summary */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              style={{ ...card, padding: 20 }}
-            >
+            <div style={{ ...card, padding: 20 }}>
               <p style={{ fontSize: 13, color: "var(--color-text)", lineHeight: 1.7, margin: 0 }}>
                 In {risk.province}, a <strong>{car}</strong> is stolen every <strong>{risk.minutesApart} minutes</strong>.
                 Only <strong>{risk.recoveredPct}%</strong> are recovered.
                 {risk.trend !== "STABLE" && (
-                  <> Theft of this model is <strong>{risk.trend.toLowerCase()}</strong> at <strong>+{risk.trendPct}%</strong> year-on-year.</>
+                  <> Theft is <strong>{risk.trend.toLowerCase()}</strong> at <strong>+{risk.trendPct}%</strong> year-on-year.</>
                 )}
               </p>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>

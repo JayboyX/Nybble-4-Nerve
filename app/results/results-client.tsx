@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Icon, IonIconLoader } from "@/components/icon";
 import { SocialProofNotifications } from "@/components/social-proof";
 import { ProtectionFlow } from "@/components/protection-flow";
+import { ShareModal } from "@/components/share-modal";
 import type { RiskResult } from "@/app/lib/risk";
 
 const card: React.CSSProperties = {
@@ -61,6 +63,7 @@ export function ResultsClient({
   levelColor: string;
   levelBg: string;
 }) {
+  const [showShare, setShowShare] = useState(false);
   const car = `${risk.make} ${risk.model}`;
 
   if (!risk.found) {
@@ -186,7 +189,54 @@ export function ResultsClient({
             </div>
           </motion.div>
         </div>
+
+        {/* Share CTA — J-005 */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+          className="pulse-border"
+          style={{
+            marginTop: 20,
+            borderRadius: 10,
+            border: "2px solid var(--color-primary)",
+            background: "var(--color-primary-pale)",
+            padding: "20px 24px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 16,
+            flexWrap: "wrap",
+          }}
+        >
+          <div>
+            <p style={{ fontSize: 14, fontWeight: 700, color: "var(--color-primary)", margin: "0 0 2px" }}>
+              Know someone with a {car}?
+            </p>
+            <p style={{ fontSize: 12, color: "var(--color-text-muted)", margin: 0 }}>
+              Send them this risk alert — it could save their car.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowShare(true)}
+            className="heartbeat"
+            style={{
+              display: "flex", alignItems: "center", gap: 8,
+              padding: "12px 20px", borderRadius: 8, border: "none",
+              background: "var(--color-primary)", color: "#fff",
+              fontSize: 14, fontWeight: 700, cursor: "pointer",
+              flexShrink: 0,
+            }}
+          >
+            <Icon name="warning-outline" size={16} color="#fff" />
+            WARN THEM NOW
+          </button>
+        </motion.div>
       </div>
+
+      {showShare && (
+        <ShareModal risk={risk} onClose={() => setShowShare(false)} />
+      )}
     </div>
   );
 }

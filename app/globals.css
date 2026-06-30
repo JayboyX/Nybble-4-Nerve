@@ -90,6 +90,39 @@ body {
   animation: ticker 30s linear infinite;
 }
 
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(220, 38, 38, 0); }
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.05); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.05); }
+  56% { transform: scale(1); }
+}
+
+.pulse-border {
+  animation: pulse-border 2s ease-in-out infinite;
+}
+
+.heartbeat {
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
+
+/* Share modal — desktop centered */
+@media (min-width: 641px) {
+  .share-backdrop {
+    align-items: center !important;
+  }
+  .share-modal-inner {
+    border-radius: 16px !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
 /* Scan screen layout — stacked on mobile, side by side on desktop */
 @media (max-width: 639px) {
   .scan-layout {

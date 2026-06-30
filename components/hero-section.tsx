@@ -86,28 +86,28 @@ export function HeroSection() {
                   Check your vehicle against real South African theft and hijacking
                   statistics. Free. Instant. Anonymous.
                 </p>
-                <motion.button
+                <button
                   onClick={() => setShowForm(true)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 8,
-                    padding: "12px 28px",
-                    borderRadius: 8,
+                    padding: "10px 24px",
+                    borderRadius: 6,
                     border: "none",
                     background: "var(--color-primary)",
                     color: "#fff",
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: 600,
                     cursor: "pointer",
-                    boxShadow: "0 4px 14px rgba(220, 38, 38, 0.2)",
+                    transition: "background 0.15s",
                   }}
+                  onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--color-primary-dark)")}
+                  onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--color-primary)")}
                 >
                   Check My Car Now
-                  <Icon name="arrow-forward-outline" size={16} color="#fff" />
-                </motion.button>
+                  <Icon name="arrow-forward-outline" size={15} color="#fff" />
+                </button>
               </motion.div>
             ) : (
               <motion.div

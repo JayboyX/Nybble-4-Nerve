@@ -16,9 +16,8 @@ import {
 
 const card: React.CSSProperties = {
   background: "#fff",
-  borderRadius: 10,
-  border: "1px solid var(--color-border)",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+  borderRadius: 8,
+  border: "1px solid #e5e7eb",
 };
 
 const sectionPad: React.CSSProperties = {
@@ -136,14 +135,14 @@ export default async function Home() {
                       <div key={v.rank} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                         <span
                           style={{
-                            width: 24,
-                            height: 24,
+                            width: 22,
+                            height: 22,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             borderRadius: "50%",
-                            background: "#111827",
-                            color: "#fff",
+                            background: "#f3f4f6",
+                            color: "#6b7280",
                             fontSize: 11,
                             fontWeight: 700,
                             flexShrink: 0,
@@ -191,16 +190,16 @@ export default async function Home() {
               <div key={item.step} style={{ textAlign: "center" }}>
                 <div
                   style={{
-                    width: 40,
-                    height: 40,
-                    margin: "0 auto 12px",
+                    width: 32,
+                    height: 32,
+                    margin: "0 auto 10px",
                     borderRadius: "50%",
-                    background: "#111827",
+                    background: "#DC2626",
                     color: "#fff",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: 700,
                   }}
                 >

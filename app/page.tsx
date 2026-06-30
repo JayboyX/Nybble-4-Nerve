@@ -278,18 +278,24 @@ export default async function Home() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 32 }}>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>SafeCheck SA</div>
-              <p style={{ fontSize: 11, color: "#9ca3af", lineHeight: 1.7, margin: "0 0 8px" }}>
+              <p style={{ fontSize: 11, color: "#9ca3af", lineHeight: 1.7, margin: "0 0 4px" }}>
                 Powered by Nerve
               </p>
+              <p style={{ fontSize: 11, color: "#9ca3af", lineHeight: 1.7, margin: "0 0 4px" }}>
+                Intermediate Data Systems (Pty) Ltd<br />
+                Reg No. 2009/106070/23
+              </p>
               <p style={{ fontSize: 11, color: "#9ca3af", lineHeight: 1.7, margin: 0 }}>
-                Intermediate Data Systems (Reg No. 2009/106070/23)<br />
                 4th Floor, 96 Rivonia Road, TBE, Sandton, 2057
               </p>
             </div>
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Contact</div>
-              <p style={{ fontSize: 12, color: "#9ca3af", margin: 0 }}>
+              <p style={{ fontSize: 12, color: "#9ca3af", margin: "0 0 4px" }}>
                 info@safecheck.co.za
+              </p>
+              <p style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.6, margin: 0 }}>
+                Not affiliated with SAPS or any government agency.
               </p>
             </div>
             <div>
@@ -301,6 +307,9 @@ export default async function Home() {
                 <a href="/terms" style={{ fontSize: 12, color: "#9ca3af", textDecoration: "none" }}>
                   Terms of Service
                 </a>
+                <p style={{ fontSize: 11, color: "#6b7280", margin: "6px 0 0", lineHeight: 1.6 }}>
+                  POPIA Compliant &bull; We process personal information lawfully and with your consent.
+                </p>
               </div>
             </div>
           </div>
@@ -314,7 +323,8 @@ export default async function Home() {
               textAlign: "center",
             }}
           >
-            &copy; {new Date().getFullYear()} SafeCheck SA. All rights reserved.
+            &copy; {new Date().getFullYear()} SafeCheck SA. All rights reserved. &nbsp;&bull;&nbsp;
+            Not affiliated with SAPS or any government agency.
           </div>
         </div>
       </footer>

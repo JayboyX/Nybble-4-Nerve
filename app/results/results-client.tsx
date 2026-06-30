@@ -100,6 +100,9 @@ export function ResultsClient({
       <SocialProofNotifications />
 
       <div style={{ maxWidth: 960, margin: "0 auto", padding: "24px 20px 100px" }}>
+        <p style={{ fontSize: 11, color: "var(--color-text-muted)", margin: "0 0 16px", lineHeight: 1.6 }}>
+          Based on actual claim rejection patterns reported to SAIA. Names withheld for privacy. These are representative examples. Not affiliated with SAPS or any government agency.
+        </p>
         <div className="results-grid">
           {/* Left — Risk Card */}
           <motion.div

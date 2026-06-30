@@ -104,14 +104,28 @@ export function LiveFeed({ initialStories }: { initialStories: Story[] }) {
         <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--color-text)", margin: 0 }}>
           Live Feed
         </h2>
-        <div style={{
-          display: "flex", gap: 4, padding: 4, borderRadius: 8,
-          background: "var(--color-background)", border: "1px solid var(--color-border)",
-        }}>
-          <button style={tabStyle("theft")} onClick={() => setActiveTab("theft")}>
+        <div
+          role="tablist"
+          aria-label="Feed category"
+          style={{
+            display: "flex", gap: 4, padding: 4, borderRadius: 8,
+            background: "var(--color-background)", border: "1px solid var(--color-border)",
+          }}
+        >
+          <button
+            role="tab"
+            aria-selected={activeTab === "theft"}
+            style={tabStyle("theft")}
+            onClick={() => setActiveTab("theft")}
+          >
             Theft Reports
           </button>
-          <button style={tabStyle("hijack")} onClick={() => setActiveTab("hijack")}>
+          <button
+            role="tab"
+            aria-selected={activeTab === "hijack"}
+            style={tabStyle("hijack")}
+            onClick={() => setActiveTab("hijack")}
+          >
             Hijacking Alerts
           </button>
         </div>

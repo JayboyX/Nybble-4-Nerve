@@ -427,7 +427,8 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                     </div>
                     <button
                       onClick={closeOverlay}
-                      style={{
+                      aria-label="Close form"
+                    style={{
                         background: "none", border: "none", cursor: "pointer",
                         padding: 4, color: "var(--color-text-muted)",
                         display: "flex", alignItems: "center", borderRadius: "50%",

@@ -117,6 +117,7 @@ export function ShareModal({
             </div>
             <button
               onClick={onClose}
+              aria-label="Close share modal"
               style={{
                 background: "none", border: "none", cursor: "pointer",
                 width: 32, height: 32, borderRadius: "50%",

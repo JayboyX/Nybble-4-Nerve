@@ -18,7 +18,7 @@ const card: React.CSSProperties = {
 function RiskMeter({ score, color }: { score: number; color: string }) {
   const filled = Math.round(score / 10);
   return (
-    <div style={{ display: "flex", gap: 3 }}>
+    <div style={{ display: "flex", gap: 3 }} role="meter" aria-label={`Risk score ${score} out of 100`} aria-valuenow={score} aria-valuemin={0} aria-valuemax={100}>
       {Array.from({ length: 10 }, (_, i) => (
         <motion.div
           key={i}

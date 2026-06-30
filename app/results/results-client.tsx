@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Icon, IonIconLoader } from "@/components/icon";
 import { SocialProofNotifications } from "@/components/social-proof";
 import { ProtectionFlow } from "@/components/protection-flow";
 import { ShareModal } from "@/components/share-modal";
+import { posthog } from "@/components/posthog-provider";
 import type { RiskResult } from "@/app/lib/risk";
 
 const card: React.CSSProperties = {
@@ -65,6 +66,14 @@ export function ResultsClient({
 }) {
   const [showShare, setShowShare] = useState(false);
   const car = `${risk.make} ${risk.model}`;
+
+  // L-008: Track car_checked event
+  useEffect(() => {
+    posthog.capture("car_checked", {
+      make: risk.make, model: risk.model, year: risk.year,
+      province: risk.province, risk_level: risk.level, risk_score: risk.score,
+    });
+  }, []);
 
   if (!risk.found) {
     return (
@@ -218,7 +227,7 @@ export function ResultsClient({
             </p>
           </div>
           <button
-            onClick={() => setShowShare(true)}
+            onClick={() => { setShowShare(true); posthog.capture("share_clicked", { make: risk.make, model: risk.model }); }}
             className="heartbeat"
             style={{
               display: "flex", alignItems: "center", gap: 8,

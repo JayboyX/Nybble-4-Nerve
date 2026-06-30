@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "./icon";
+import { posthog } from "./posthog-provider";
 import type { RiskResult } from "@/app/lib/risk";
 
 type FlowState = "initial" | "yes" | "overlay";
@@ -75,6 +76,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
   const [consent, setConsent] = useState(false);
   const [consentTime, setConsentTime] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [reference, setReference] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -86,6 +88,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
   function openOverlay(intent: "no" | "notsure") {
     setOverlayIntent(intent);
     setFlowState("overlay");
+    posthog.capture("protection_status", { status: intent, make: risk.make, model: risk.model });
   }
 
   function closeOverlay() {
@@ -97,6 +100,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
     setConsent(false);
     setConsentTime("");
     setSubmitted(false);
+    setReference("");
   }
 
   function handlePhoneChange(val: string) {
@@ -141,11 +145,21 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
     } catch {
       // storage unavailable
     }
-    // POST to Supabase via API route
-    await fetch("/api/leads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(lead),
+    // POST to Supabase via API route — L-005: capture reference number
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lead),
+      });
+      const data = await res.json();
+      if (data.reference) setReference(data.reference);
+    } catch {
+      // non-fatal — lead is in localStorage regardless
+    }
+    posthog.capture("call_scheduled", {
+      make: risk.make, model: risk.model, province: risk.province,
+      call_time: callTime, risk_level: risk.level,
     });
     setSubmitting(false);
     setSubmitted(true);
@@ -185,7 +199,7 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
               {/* YES */}
               <button
-                onClick={() => setFlowState("yes")}
+                onClick={() => { setFlowState("yes"); posthog.capture("protection_status", { status: "yes", make: risk.make, model: risk.model }); }}
                 style={{
                   display: "flex", alignItems: "center", justifyContent: "space-between",
                   padding: "12px 14px", borderRadius: 8, border: "1px solid var(--color-border)",
@@ -382,8 +396,13 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                     background: "var(--color-background)",
                     border: "1px solid var(--color-border)",
                     fontSize: 11, color: "var(--color-text-muted)",
-                    textAlign: "left", lineHeight: 1.6,
+                    textAlign: "left", lineHeight: 1.8,
                   }}>
+                    {reference && (
+                      <div style={{ fontWeight: 700, color: "var(--color-text)", marginBottom: 2 }}>
+                        Reference: {reference}
+                      </div>
+                    )}
                     POPIA consent recorded at {consentTime ? new Date(consentTime).toLocaleString("en-ZA") : "—"}
                   </div>
                   <button

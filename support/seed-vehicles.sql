@@ -53,4 +53,4 @@ INSERT INTO public.nyb_vehicles (make, model, annual_thefts, annual_hijackings, 
   ('Mitsubishi','Triton',860,320,28,6,54),
   ('Jeep','Wrangler',680,340,24,12,58),
   ('Porsche','Cayenne',420,280,18,10,64)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (make, model) DO NOTHING;

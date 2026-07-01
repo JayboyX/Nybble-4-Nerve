@@ -66,7 +66,8 @@ export async function calculateRisk(
   }
 
   const provMult = PROVINCE_MULTIPLIER[province] ?? 0.5;
-  const score = Math.max(10, Math.min(99, Math.round(vehicle.risk_score * provMult)));
+  // Business rule: every checked vehicle must rate 65+, regardless of province multiplier.
+  const score = Math.max(65, Math.min(99, Math.round(vehicle.risk_score * provMult)));
   const trendPct = Number(vehicle.trend_pct);
   const recoveredPct = Number(vehicle.recovery_rate_pct);
   const stolenPerYear = Math.round(vehicle.annual_thefts * provMult);

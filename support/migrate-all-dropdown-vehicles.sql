@@ -238,4 +238,4 @@ INSERT INTO public.nyb_vehicles (make, model, annual_thefts, annual_hijackings, 
   ('Volvo','XC40',1401,605,37,12,61),
   ('Volvo','XC60',1425,572,40,12,61),
   ('Volvo','XC90',1460,374,38,23,61)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (make, model) DO NOTHING;

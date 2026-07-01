@@ -37,4 +37,4 @@ INSERT INTO public.nyb_vehicles (make, model, annual_thefts, annual_hijackings, 
   ('Opel','Corsa',280,90,34,5,38),
   ('Chery','Tiggo 7 Pro',380,150,32,22,44),
   ('JAC','T6',300,110,30,14,42)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (make, model) DO NOTHING;

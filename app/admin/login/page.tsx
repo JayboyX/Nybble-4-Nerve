@@ -32,7 +32,7 @@ export default function AdminLoginPage() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#f9fafb",
+      background: "var(--color-background)",
       display: "flex",
       flexDirection: "column",
       position: "relative",
@@ -44,11 +44,11 @@ export default function AdminLoginPage() {
         padding: "20px 40px",
         position: "relative", zIndex: 10,
       }}>
-        <span style={{ fontSize: 16, fontWeight: 700, color: "#111827", letterSpacing: "-0.01em" }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: "var(--color-text)", letterSpacing: "-0.01em" }}>
           SafeCheck SA
         </span>
-        <p style={{ fontSize: 13, color: "#6b7280", margin: 0 }}>
-          <span style={{ fontWeight: 600, color: "#111827" }}>Admin sign in</span>
+        <p style={{ fontSize: 13, color: "var(--color-text-muted)", margin: 0 }}>
+          <span style={{ fontWeight: 600, color: "var(--color-text)" }}>Admin sign in</span>
           {" · "}Lead management dashboard
         </p>
       </div>
@@ -62,8 +62,8 @@ export default function AdminLoginPage() {
 
           {error && (
             <p style={{
-              fontSize: 13, color: "#DC2626", margin: 0,
-              background: "#fef2f2", border: "1px solid #fecaca",
+              fontSize: 13, color: "var(--color-primary-light)", margin: 0,
+              background: "var(--color-primary-pale)", border: "1px solid rgba(239, 68, 68, 0.3)",
               borderRadius: 6, padding: "10px 14px",
             }}>
               {error}
@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
           <div>
             <label style={{
               display: "block", fontSize: 13, fontWeight: 500,
-              color: "#111827", marginBottom: 6,
+              color: "var(--color-text)", marginBottom: 6,
             }}>
               Password
             </label>
@@ -86,13 +86,13 @@ export default function AdminLoginPage() {
               placeholder="••••••••"
               style={{
                 width: "100%", height: 44, padding: "0 14px",
-                border: "1px solid #d1d5db", borderRadius: 6,
-                background: "#fff", fontSize: 14, color: "#111827",
+                border: "1px solid var(--color-border)", borderRadius: 6,
+                background: "var(--color-surface-raised)", fontSize: 14, color: "var(--color-text)",
                 outline: "none", boxSizing: "border-box",
                 transition: "border-color 0.15s",
               }}
-              onFocus={(e) => (e.target.style.borderColor = "#DC2626")}
-              onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
+              onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
+              onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")}
             />
           </div>
 
@@ -101,8 +101,8 @@ export default function AdminLoginPage() {
             disabled={loading || !password}
             style={{
               width: "100%", height: 44,
-              background: loading || !password ? "#d1d5db" : "#DC2626",
-              color: loading || !password ? "#9ca3af" : "#fff",
+              background: loading || !password ? "var(--color-surface-raised)" : "var(--color-primary)",
+              color: loading || !password ? "var(--color-text-muted)" : "#fff",
               border: "none", borderRadius: 6,
               fontSize: 14, fontWeight: 600,
               cursor: loading || !password ? "not-allowed" : "pointer",
@@ -117,7 +117,7 @@ export default function AdminLoginPage() {
 
       {/* Footer bar */}
       <div style={{
-        background: "#111827",
+        background: "var(--color-surface-dark)",
         padding: "12px 40px",
         textAlign: "right",
         position: "relative", zIndex: 10,

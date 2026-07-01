@@ -121,7 +121,7 @@ export function AdminClient({ initialLeads }: { initialLeads: Lead[] }) {
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
             width: 30, height: 30, borderRadius: 7,
-            background: "#DC2626",
+            background: "var(--color-primary)",
             display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0,
           }}>
@@ -234,7 +234,7 @@ export function AdminClient({ initialLeads }: { initialLeads: Lead[] }) {
               borderRadius: 8, color: "#f9fafb", fontSize: 13, outline: "none",
               width: 240, transition: "border-color 0.15s",
             }}
-            onFocus={(e) => (e.target.style.borderColor = "#DC2626")}
+            onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
             onBlur={(e) => (e.target.style.borderColor = "#2a2a2a")}
           />
           {search && (

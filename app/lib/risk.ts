@@ -87,20 +87,20 @@ export async function calculateRisk(
 
 export function getLevelColor(level: RiskResult["level"]): string {
   switch (level) {
-    case "EXTREME": return "#7f1d1d";
-    case "CRITICAL": return "#DC2626";
-    case "ELEVATED": return "#D97706";
-    case "MODERATE": return "#2563EB";
-    case "LOW": return "#16a34a";
+    case "EXTREME": return "#f87171";
+    case "CRITICAL": return "#ef4444";
+    case "ELEVATED": return "#f59e0b";
+    case "MODERATE": return "#60a5fa";
+    case "LOW": return "#10b981";
   }
 }
 
 export function getLevelBg(level: RiskResult["level"]): string {
   switch (level) {
-    case "EXTREME": return "#fef2f2";
-    case "CRITICAL": return "#fef2f2";
-    case "ELEVATED": return "#fffbeb";
-    case "MODERATE": return "#eff6ff";
-    case "LOW": return "#f0fdf4";
+    case "EXTREME": return "rgba(69, 10, 10, 0.5)";
+    case "CRITICAL": return "rgba(69, 10, 10, 0.4)";
+    case "ELEVATED": return "rgba(69, 26, 3, 0.4)";
+    case "MODERATE": return "rgba(23, 37, 84, 0.4)";
+    case "LOW": return "rgba(2, 44, 34, 0.4)";
   }
 }

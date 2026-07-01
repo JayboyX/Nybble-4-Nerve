@@ -54,7 +54,7 @@ export default function TermsPage() {
       <IonIconLoader />
 
       {/* Nav back */}
-      <div style={{ background: "#fff", borderBottom: "1px solid var(--color-border)" }}>
+      <div style={{ background: "var(--color-surface)", borderBottom: "1px solid var(--color-border)" }}>
         <div style={{ maxWidth: 760, margin: "0 auto", padding: "14px 20px" }}>
           <a
             href="/"
@@ -173,7 +173,7 @@ export default function TermsPage() {
         <div style={{
           marginTop: 40,
           padding: "16px 20px",
-          background: "#fff",
+          background: "var(--color-surface)",
           borderRadius: 10,
           border: "1px solid var(--color-border)",
           fontSize: 12,

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Icon } from "./icon";
 
 const BASE_INCIDENTS = [
   "Toyota Hilux stolen — Midrand, Gauteng — 14 min ago",
@@ -57,14 +56,6 @@ export function Ticker() {
 
   return (
     <div className="scanline-host" style={{ width: "100%", overflow: "hidden", background: "var(--color-surface-dark)", color: "var(--color-text-on-dark)" }}>
-      <div style={{
-        padding: "6px 16px", fontSize: 11, color: "var(--color-text-muted)",
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
-        display: "flex", alignItems: "center", gap: 6,
-      }}>
-        <Icon name="information-circle-outline" size={14} color="var(--color-text-muted)" />
-        Representative crime scenarios — not live incident reports
-      </div>
       <div style={{ position: "relative", height: 32, display: "flex", alignItems: "center" }}>
         <div
           key={items.length}

@@ -7,58 +7,58 @@ Tracks which files have been touched by the site-wide Codesk design language rev
 | File | Status |
 |---|---|
 | app/page.tsx | Done |
-| app/layout.tsx | Pending |
-| app/globals.css | Pending |
-| app/results/page.tsx | Pending |
-| app/results/results-client.tsx | Pending |
-| app/admin/page.tsx | Pending |
-| app/admin/layout.tsx | Pending |
-| app/admin/admin-client.tsx | Pending |
-| app/admin/login/page.tsx | Pending |
-| app/privacy/page.tsx | Pending |
-| app/terms/page.tsx | Pending |
-| app/api/admin/auth/route.ts | Pending |
-| app/api/admin/leads/route.ts | Pending |
-| app/api/leads/route.ts | Pending |
-| app/lib/data.ts | Pending |
-| app/lib/risk.ts | Pending |
-| app/lib/supabase-admin.ts | Pending |
-| app/lib/supabase.ts | Pending |
-| app/lib/vehicles.ts | Pending |
+| app/layout.tsx | Done (N/A — no hardcoded colors) |
+| app/globals.css | Done — dark theme tokens |
+| app/results/page.tsx | Done |
+| app/results/results-client.tsx | Done |
+| app/admin/page.tsx | Done (N/A — no UI) |
+| app/admin/layout.tsx | Done (kept near-black control-room theme) |
+| app/admin/admin-client.tsx | Done — brand red tokenized |
+| app/admin/login/page.tsx | Done — converted light theme to dark |
+| app/privacy/page.tsx | Done |
+| app/terms/page.tsx | Done |
+| app/api/admin/auth/route.ts | Done (N/A — no UI) |
+| app/api/admin/leads/route.ts | Done (N/A — no UI) |
+| app/api/leads/route.ts | Done (N/A — no UI) |
+| app/lib/data.ts | Done (N/A — no UI) |
+| app/lib/risk.ts | Done — darkened level color/bg tokens |
+| app/lib/supabase-admin.ts | Done (N/A — no UI) |
+| app/lib/supabase.ts | Done (N/A — no UI) |
+| app/lib/vehicles.ts | Done (N/A — no UI) |
 
 ## components/
 
 | File | Status |
 |---|---|
-| components/animated-counter.tsx | Pending |
+| components/animated-counter.tsx | Done |
 | components/car-check-form.tsx | Done |
 | components/check-cta-button.tsx | Done |
-| components/fear-accordion.tsx | Pending |
+| components/fear-accordion.tsx | Done |
 | components/hero-section.tsx | Done |
-| components/icon.tsx | Pending |
+| components/icon.tsx | Done |
 | components/live-counter.tsx | Done |
 | components/live-feed.tsx | Done |
 | components/live-stats.tsx | Done |
-| components/posthog-provider.tsx | Pending |
-| components/protection-flow.tsx | Pending |
+| components/posthog-provider.tsx | Done (N/A — no UI) |
+| components/protection-flow.tsx | Done |
 | components/province-bars.tsx | Done |
 | components/scan-screen.tsx | Done |
-| components/share-modal.tsx | Pending |
-| components/social-proof.tsx | Pending |
+| components/share-modal.tsx | Done |
+| components/social-proof.tsx | Done |
 | components/ticker.tsx | Done |
 
 ## styles/
 
 | File | Status |
 |---|---|
-| styles/design-system.ts | Pending |
+| styles/design-system.ts | Done — dark theme tokens |
 
 ## support/
 
 | File | Status |
 |---|---|
-| support/guide/NYB_SCHEMA.md | Pending (non-UI) |
-| support/migrate-leads.sql | Pending (non-UI) |
-| support/schema.sql | Pending (non-UI) |
-| support/seed-vehicles.sql | Pending (non-UI) |
-| support/setup-schema.mjs | Pending (non-UI) |
+| support/guide/NYB_SCHEMA.md | N/A — no UI |
+| support/migrate-leads.sql | N/A — no UI |
+| support/schema.sql | N/A — no UI |
+| support/seed-vehicles.sql | N/A — no UI |
+| support/setup-schema.mjs | N/A — no UI |

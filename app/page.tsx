@@ -40,6 +40,27 @@ export default async function Home() {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <IonIconLoader />
 
+      {/* Brand Header */}
+      <div
+        style={{
+          background: "var(--color-surface-dark)",
+          borderBottom: "1px solid var(--color-border)",
+          padding: "12px 20px",
+        }}
+      >
+        <div style={{ ...sectionPad, display: "flex", alignItems: "center", gap: 10 }}>
+          <Icon name="shield-checkmark" size={22} color="var(--color-primary)" />
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "var(--color-text-on-dark)", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
+              SafeCheck South Africa
+            </div>
+            <div style={{ fontSize: 10, color: "var(--color-text-muted)", lineHeight: 1.2 }}>
+              Powered by Nerve
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Disclaimer Banner */}
       <div
         style={{

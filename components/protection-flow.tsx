@@ -100,70 +100,55 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
   // ─── shared styles ─────────────────────────────────────────
   const input: React.CSSProperties = {
     width: "100%", height: 36, padding: "0 10px",
-    border: "1px solid #e5e7eb", borderRadius: 6,
-    fontSize: 13, color: "#111827", background: "#fff",
+    border: "1px solid var(--color-border)", borderRadius: 6,
+    fontSize: 13, color: "var(--color-text)", background: "var(--color-surface-raised)",
     outline: "none", boxSizing: "border-box", transition: "border-color 0.15s",
   };
   const fieldLabel: React.CSSProperties = {
     display: "block", fontSize: 11, fontWeight: 600,
-    color: "#6b7280", marginBottom: 4,
+    color: "var(--color-text-muted)", marginBottom: 4,
     textTransform: "uppercase", letterSpacing: "0.05em",
   };
 
   return (
     <>
       {/* ── Card ── */}
-      <div style={{ background: "#fff", borderRadius: 8, border: "1px solid #e5e7eb", padding: 20 }}>
-        <p style={{ fontSize: 13, fontWeight: 600, color: "#111827", margin: "0 0 2px" }}>
-          Is your {car} currently insured?
+      <div style={{ background: "var(--color-surface)", borderRadius: 8, border: "1px solid var(--color-border)", padding: 20 }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: "var(--color-text)", margin: "0 0 2px" }}>
+          Is your {car} protected right now?
         </p>
-        <p style={{ fontSize: 12, color: "#9ca3af", margin: "0 0 16px" }}>
-          A licensed advisor can review your cover for free.
+        <p style={{ fontSize: 12, color: "var(--color-text-muted)", margin: "0 0 16px" }}>
+          If someone took it tonight — would you be covered?
         </p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
           {([
-            { i: "no" as Intent, label: "No — I need protection", primary: true },
-            { i: "yes" as Intent, label: "Yes — but I want to compare", primary: false },
-            { i: "notsure" as Intent, label: "Not sure — help me check", primary: false },
-          ]).map(({ i, label, primary }) => (
+            { i: "yes" as Intent, label: "Yes", sub: "I have cover", icon: "checkmark-circle", accent: "var(--color-success)" },
+            { i: "no" as Intent, label: "No", sub: "Not covered", icon: "close-circle", accent: "var(--color-primary)" },
+            { i: "notsure" as Intent, label: "Not sure", sub: "I think so", icon: "help-circle", accent: "var(--color-warning)" },
+          ]).map(({ i, label, sub, icon, accent }) => (
             <button
               key={i}
               onClick={() => openModal(i)}
               style={{
-                width: "100%", padding: "8px 12px",
-                borderRadius: 6, fontSize: 13, fontWeight: 600,
-                cursor: "pointer", textAlign: "center",
-                transition: "background 0.15s, border-color 0.15s, color 0.15s",
-                ...(primary
-                  ? { background: "#DC2626", color: "#fff", border: "1px solid #DC2626" }
-                  : { background: "#fff", color: "#374151", border: "1px solid #e5e7eb" }),
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                padding: "12px 8px", borderRadius: 8,
+                border: "1px solid var(--color-border)", background: "var(--color-surface-raised)",
+                cursor: "pointer", transition: "border-color 0.15s, background 0.15s",
               }}
-              onMouseEnter={(e) => {
-                if (!primary) {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "#DC2626";
-                  (e.currentTarget as HTMLButtonElement).style.color = "#DC2626";
-                } else {
-                  (e.currentTarget as HTMLButtonElement).style.background = "#b91c1c";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!primary) {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "#e5e7eb";
-                  (e.currentTarget as HTMLButtonElement).style.color = "#374151";
-                } else {
-                  (e.currentTarget as HTMLButtonElement).style.background = "#DC2626";
-                }
-              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = accent; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--color-border)"; }}
             >
-              {label}
+              <Icon name={icon} size={22} color={accent} />
+              <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)" }}>{label}</span>
+              <span style={{ fontSize: 10, color: "var(--color-text-muted)" }}>{sub}</span>
             </button>
           ))}
         </div>
 
-        <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid #f3f4f6", display: "flex", alignItems: "center", gap: 5 }}>
-          <Icon name="shield-checkmark-outline" size={12} color="#9ca3af" />
-          <span style={{ fontSize: 11, color: "#9ca3af" }}>FSCA-licensed · POPIA compliant · No commitment</span>
+        <div style={{ marginTop: 14, paddingTop: 12, borderTop: "1px solid var(--color-border)", display: "flex", alignItems: "center", gap: 5 }}>
+          <Icon name="shield-checkmark-outline" size={12} color="var(--color-text-muted)" />
+          <span style={{ fontSize: 11, color: "var(--color-text-muted)" }}>FSCA-licensed · POPIA compliant · No commitment</span>
         </div>
       </div>
 
@@ -177,7 +162,8 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
             transition={{ duration: 0.15 }}
             style={{
               position: "fixed", inset: 0, zIndex: 100,
-              background: "rgba(0,0,0,0.4)",
+              background: "rgba(2, 6, 23, 0.9)",
+              backdropFilter: "blur(4px)",
               display: "flex", alignItems: "center", justifyContent: "center",
               padding: 16,
             }}
@@ -189,11 +175,11 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
               exit={{ opacity: 0, y: 12, scale: 0.98 }}
               transition={{ duration: 0.18 }}
               style={{
-                background: "#fff", borderRadius: 10,
-                width: "100%", maxWidth: 440,
+                background: "var(--color-surface)", borderRadius: 10,
+                width: "100%", maxWidth: 460,
                 maxHeight: "calc(100vh - 32px)", overflowY: "auto",
-                border: "1px solid #e5e7eb",
-                boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+                border: "1px solid var(--color-border)",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
               }}
             >
               {submitted ? (
@@ -201,24 +187,24 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                 <div style={{ padding: "36px 28px", textAlign: "center" }}>
                   <div style={{
                     width: 44, height: 44, borderRadius: "50%",
-                    background: "#f0fdf4", margin: "0 auto 16px",
+                    background: "var(--color-success-bg)", margin: "0 auto 16px",
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
-                    <Icon name="checkmark-circle" size={26} color="#16a34a" />
+                    <Icon name="checkmark-circle" size={26} color="var(--color-success)" />
                   </div>
-                  <p style={{ fontSize: 15, fontWeight: 700, color: "#111827", margin: "0 0 6px" }}>
-                    We'll call you, {name.trim().split(" ")[0]}
+                  <p style={{ fontSize: 15, fontWeight: 700, color: "var(--color-text)", margin: "0 0 6px" }}>
+                    We&apos;ll call you, {name.trim().split(" ")[0]}
                   </p>
-                  <p style={{ fontSize: 13, color: "#6b7280", margin: "0 0 16px", lineHeight: 1.6 }}>
-                    A licensed advisor will contact you about your <strong style={{ color: "#111827" }}>{car}</strong> during <strong style={{ color: "#111827" }}>{callTime}</strong>.
+                  <p style={{ fontSize: 13, color: "var(--color-text-muted)", margin: "0 0 16px", lineHeight: 1.6 }}>
+                    A licensed advisor will contact you about your <strong style={{ color: "var(--color-text)" }}>{car}</strong> during <strong style={{ color: "var(--color-text)" }}>{callTime}</strong>.
                   </p>
                   {reference && (
                     <div style={{
                       padding: "8px 12px", borderRadius: 6, marginBottom: 14,
-                      background: "#f9fafb", border: "1px solid #e5e7eb",
-                      fontSize: 12, color: "#6b7280", textAlign: "left",
+                      background: "var(--color-surface-raised)", border: "1px solid var(--color-border)",
+                      fontSize: 12, color: "var(--color-text-muted)", textAlign: "left",
                     }}>
-                      <span style={{ fontWeight: 600, color: "#111827" }}>Ref: {reference}</span>
+                      <span style={{ fontWeight: 600, color: "var(--color-text)" }}>Ref: {reference}</span>
                       <br />
                       Consent recorded · {new Date(consentTime).toLocaleString("en-ZA")}
                     </div>
@@ -226,8 +212,8 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                   <button
                     onClick={closeModal}
                     style={{
-                      width: "100%", height: 36, borderRadius: 6, border: "1px solid #DC2626",
-                      background: "#DC2626", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer",
+                      width: "100%", height: 36, borderRadius: 6, border: "1px solid var(--color-primary)",
+                      background: "var(--color-primary)", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer",
                     }}
                   >
                     Done
@@ -235,26 +221,29 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                 </div>
               ) : (
                 <>
-                  {/* Modal header */}
+                  {/* Modal header — fear banner */}
                   <div style={{
                     padding: "14px 18px",
-                    borderBottom: "1px solid #e5e7eb",
+                    borderBottom: "1px solid var(--color-border)",
+                    background: intent === "yes"
+                      ? "var(--color-surface-raised)"
+                      : "linear-gradient(to right, var(--color-primary-pale), transparent)",
                     display: "flex", alignItems: "flex-start", justifyContent: "space-between",
                   }}>
                     <div>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#111827", margin: "0 0 1px" }}>{cfg.heading}</p>
-                      <p style={{ fontSize: 11, color: "#9ca3af", margin: 0 }}>{cfg.sub}</p>
+                      <p style={{ fontSize: 14, fontWeight: 800, color: "var(--color-text)", margin: "0 0 1px" }}>{cfg.heading}</p>
+                      <p style={{ fontSize: 11, color: intent === "yes" ? "var(--color-text-muted)" : "var(--color-primary)", fontWeight: 600, margin: 0 }}>{cfg.sub}</p>
                     </div>
                     <button
                       onClick={closeModal}
                       aria-label="Close"
                       style={{
                         background: "none", border: "none", cursor: "pointer",
-                        padding: "2px 4px", color: "#9ca3af", fontSize: 18, lineHeight: 1,
+                        padding: "2px 4px", color: "var(--color-text-muted)", fontSize: 18, lineHeight: 1,
                         borderRadius: 4, transition: "color 0.15s",
                       }}
-                      onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "#374151")}
-                      onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "#9ca3af")}
+                      onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "var(--color-text)")}
+                      onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "var(--color-text-muted)")}
                     >
                       ✕
                     </button>
@@ -264,8 +253,8 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                     {/* Hook */}
                     <div style={{
                       padding: "10px 12px", borderRadius: 6,
-                      background: "#fef2f2", border: "1px solid #fecaca",
-                      fontSize: 12, color: "#991b1b", lineHeight: 1.6,
+                      background: "var(--color-primary-pale)", border: "1px solid rgba(239, 68, 68, 0.25)",
+                      fontSize: 12, color: "var(--color-primary-light)", lineHeight: 1.6,
                     }}>
                       {cfg.hook(car, risk.recoveredPct, risk.minutesApart)}
                     </div>
@@ -274,8 +263,8 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                     <div>
                       <label style={fieldLabel} htmlFor="pf-name">Name</label>
                       <input id="pf-name" type="text" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} style={input}
-                        onFocus={(e) => (e.target.style.borderColor = "#DC2626")}
-                        onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")} />
+                        onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
+                        onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")} />
                     </div>
 
                     {/* Phone */}
@@ -283,8 +272,8 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                       <label style={fieldLabel} htmlFor="pf-phone">Cell number</label>
                       <input id="pf-phone" type="tel" placeholder="0821234567" value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))} style={input} maxLength={10}
-                        onFocus={(e) => (e.target.style.borderColor = "#DC2626")}
-                        onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")} />
+                        onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
+                        onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")} />
                     </div>
 
                     {/* Call time */}
@@ -299,15 +288,15 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                               onClick={() => setCallTime(t.label)}
                               style={{
                                 padding: "8px 10px", borderRadius: 6, cursor: "pointer",
-                                border: selected ? "1px solid #DC2626" : "1px solid #e5e7eb",
-                                background: selected ? "#fef2f2" : "#fff",
+                                border: selected ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
+                                background: selected ? "var(--color-primary-pale)" : "var(--color-surface-raised)",
                                 textAlign: "left", transition: "border-color 0.15s, background 0.15s",
                               }}
                             >
-                              <div style={{ fontSize: 12, fontWeight: 600, color: selected ? "#DC2626" : "#111827" }}>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: selected ? "var(--color-primary-light)" : "var(--color-text)" }}>
                                 {t.label}
                               </div>
-                              <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 1 }}>{t.range}</div>
+                              <div style={{ fontSize: 11, color: "var(--color-text-muted)", marginTop: 1 }}>{t.range}</div>
                             </button>
                           );
                         })}
@@ -319,12 +308,12 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                       <input
                         id="popia-consent" type="checkbox" checked={consent}
                         onChange={(e) => { setConsent(e.target.checked); if (e.target.checked) setConsentTime(new Date().toISOString()); }}
-                        style={{ marginTop: 3, flexShrink: 0, accentColor: "#DC2626", cursor: "pointer" }}
+                        style={{ marginTop: 3, flexShrink: 0, accentColor: "var(--color-primary)", cursor: "pointer" }}
                       />
-                      <label htmlFor="popia-consent" style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.6, cursor: "pointer" }}>
-                        I consent to being contacted by FSCA-licensed providers. I've read the{" "}
+                      <label htmlFor="popia-consent" style={{ fontSize: 11, color: "var(--color-text-muted)", lineHeight: 1.6, cursor: "pointer" }}>
+                        I consent to being contacted by FSCA-licensed providers. I&apos;ve read the{" "}
                         <a href="/privacy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
-                          style={{ color: "#DC2626", textDecoration: "none", fontWeight: 600 }}>Privacy Policy</a>.
+                          style={{ color: "var(--color-primary)", textDecoration: "none", fontWeight: 600 }}>Privacy Policy</a>.
                       </label>
                     </div>
 
@@ -332,11 +321,12 @@ export function ProtectionFlow({ risk }: { risk: RiskResult }) {
                     <button
                       onClick={handleSubmit}
                       disabled={!canSubmit || submitting}
+                      className={canSubmit && !submitting ? "heartbeat" : undefined}
                       style={{
-                        width: "100%", height: 36, borderRadius: 6, border: "none",
-                        background: canSubmit && !submitting ? "#DC2626" : "#f3f4f6",
-                        color: canSubmit && !submitting ? "#fff" : "#9ca3af",
-                        fontSize: 13, fontWeight: 600,
+                        width: "100%", height: 40, borderRadius: 6, border: "none",
+                        background: canSubmit && !submitting ? "var(--color-primary)" : "var(--color-surface-raised)",
+                        color: canSubmit && !submitting ? "#fff" : "var(--color-text-muted)",
+                        fontSize: 13, fontWeight: 700,
                         cursor: canSubmit && !submitting ? "pointer" : "not-allowed",
                         transition: "background 0.15s, color 0.15s",
                       }}

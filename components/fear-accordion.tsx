@@ -53,10 +53,9 @@ export function FearAccordion({ risk }: { risk: RiskResult }) {
 
   return (
     <div style={{
-      background: "#fff",
+      background: "var(--color-surface)",
       borderRadius: 10,
       border: "1px solid var(--color-border)",
-      boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
       overflow: "hidden",
     }}>
       <button

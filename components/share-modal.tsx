@@ -83,7 +83,7 @@ export function ShareModal({
         transition={{ duration: 0.2 }}
         style={{
           position: "fixed", inset: 0, zIndex: 60,
-          background: "rgba(17,24,39,0.55)",
+          background: "rgba(2,6,23,0.75)",
           display: "flex",
           alignItems: "flex-end",
           justifyContent: "center",
@@ -96,12 +96,12 @@ export function ShareModal({
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: "spring", damping: 28, stiffness: 320 }}
           style={{
-            background: "#fff",
+            background: "var(--color-surface)",
             width: "100%",
             maxWidth: 520,
             borderRadius: "16px 16px 0 0",
             padding: "24px 20px 32px",
-            boxShadow: "0 -8px 40px rgba(0,0,0,0.2)",
+            boxShadow: "0 -8px 40px rgba(0,0,0,0.5)",
           }}
           className="share-modal-inner"
         >
@@ -154,8 +154,8 @@ export function ShareModal({
               onClick={handleCopy}
               style={{
                 width: "100%", height: 48, borderRadius: 8,
-                border: `1px solid ${copied ? "#bbf7d0" : "var(--color-border)"}`,
-                background: copied ? "var(--color-success-bg)" : "var(--color-background)",
+                border: `1px solid ${copied ? "var(--color-success)" : "var(--color-border)"}`,
+                background: copied ? "var(--color-success-bg)" : "var(--color-surface-raised)",
                 color: copied ? "var(--color-success)" : "var(--color-text)",
                 fontSize: 14, fontWeight: 600, cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,

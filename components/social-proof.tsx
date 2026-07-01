@@ -73,10 +73,10 @@ export function SocialProofNotifications() {
             right: 20,
             maxWidth: 380,
             zIndex: 200,
-            background: "#fff",
+            background: "var(--color-surface)",
             borderRadius: 10,
             border: "1px solid var(--color-border)",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
             padding: "14px 16px",
             display: "flex",
             alignItems: "flex-start",
@@ -89,7 +89,7 @@ export function SocialProofNotifications() {
             display: "flex", alignItems: "center", justifyContent: "center",
             flexShrink: 0,
           }}>
-            <Icon name="shield-checkmark" size={16} color="#16a34a" />
+            <Icon name="shield-checkmark" size={16} color="var(--color-success)" />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontSize: 13, color: "var(--color-text)", margin: 0, lineHeight: 1.5 }}>

@@ -33,7 +33,7 @@ export function HeroSection() {
 
   return (
     <>
-      <section id="hero-section" style={{ background: "#fff", borderBottom: "1px solid var(--color-border)", overflow: "hidden" }}>
+      <section id="hero-section" style={{ background: "var(--color-surface)", borderBottom: "1px solid var(--color-border)", overflow: "hidden" }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "64px 20px", textAlign: "center" }}>
           <AnimatePresence mode="wait">
             {!showForm ? (

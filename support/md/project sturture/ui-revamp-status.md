@@ -34,7 +34,7 @@ Tracks which files have been touched by the site-wide Codesk design language rev
 | components/car-check-form.tsx | Pending |
 | components/check-cta-button.tsx | Pending |
 | components/fear-accordion.tsx | Pending |
-| components/hero-section.tsx | Pending |
+| components/hero-section.tsx | Done |
 | components/icon.tsx | Pending |
 | components/live-counter.tsx | Pending |
 | components/live-feed.tsx | Pending |

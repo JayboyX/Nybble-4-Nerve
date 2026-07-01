@@ -4,7 +4,7 @@
   --color-primary:         #DC2626;
   --color-primary-dark:    #991B1B;
   --color-primary-light:   #F87171;
-  --color-primary-pale:    #FEF2F2;
+  --color-primary-pale:    rgba(69, 10, 10, 0.4);
 
   --color-secondary:       #1E3A5F;
   --color-secondary-light: #2563EB;

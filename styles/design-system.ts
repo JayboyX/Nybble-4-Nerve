@@ -3,7 +3,7 @@ export const colors = {
   primary: "#DC2626",        // Red — danger/urgency/fear
   primaryDark: "#991B1B",    // Deep red — hover states
   primaryLight: "#F87171",   // Light red — accents
-  primaryPale: "#FEF2F2",   // Pale red — backgrounds
+  primaryPale: "rgba(69, 10, 10, 0.4)",   // Dark red glass — badge/callout backgrounds
 
   // Secondary — trust/authority
   secondary: "#1E3A5F",     // Navy — professionalism

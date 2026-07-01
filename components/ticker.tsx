@@ -56,13 +56,13 @@ export function Ticker() {
   const doubled = [...items, ...items];
 
   return (
-    <div className="scanline-host" style={{ width: "100%", overflow: "hidden", background: "#111827", color: "#f9fafb" }}>
+    <div className="scanline-host" style={{ width: "100%", overflow: "hidden", background: "var(--color-surface-dark)", color: "var(--color-text-on-dark)" }}>
       <div style={{
-        padding: "6px 16px", fontSize: 11, color: "#9ca3af",
+        padding: "6px 16px", fontSize: 11, color: "var(--color-text-muted)",
         borderBottom: "1px solid rgba(255,255,255,0.08)",
         display: "flex", alignItems: "center", gap: 6,
       }}>
-        <Icon name="information-circle-outline" size={14} color="#9ca3af" />
+        <Icon name="information-circle-outline" size={14} color="var(--color-text-muted)" />
         Representative crime scenarios — not live incident reports
       </div>
       <div style={{ position: "relative", height: 32, display: "flex", alignItems: "center" }}>

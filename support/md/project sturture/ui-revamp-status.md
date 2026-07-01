@@ -45,7 +45,7 @@ Tracks which files have been touched by the site-wide Codesk design language rev
 | components/scan-screen.tsx | Pending |
 | components/share-modal.tsx | Pending |
 | components/social-proof.tsx | Pending |
-| components/ticker.tsx | Pending |
+| components/ticker.tsx | Done |
 
 ## styles/
 

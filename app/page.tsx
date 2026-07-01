@@ -15,9 +15,9 @@ import {
 } from "./lib/data";
 
 const card: React.CSSProperties = {
-  background: "#fff",
+  background: "var(--color-surface)",
   borderRadius: 8,
-  border: "1px solid #e5e7eb",
+  border: "1px solid var(--color-border)",
 };
 
 const sectionPad: React.CSSProperties = {
@@ -141,8 +141,8 @@ export default async function Home() {
                             alignItems: "center",
                             justifyContent: "center",
                             borderRadius: "50%",
-                            background: "#f3f4f6",
-                            color: "#6b7280",
+                            background: "var(--color-surface-raised)",
+                            color: "var(--color-text-muted)",
                             fontSize: 11,
                             fontWeight: 700,
                             flexShrink: 0,
@@ -180,7 +180,7 @@ export default async function Home() {
       </section>
 
       {/* How It Works */}
-      <section style={{ background: "#fff", borderTop: "1px solid var(--color-border)" }}>
+      <section style={{ background: "var(--color-surface)", borderTop: "1px solid var(--color-border)" }}>
         <div style={{ ...sectionPad, padding: "64px 20px", textAlign: "center" }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--color-text)", margin: "0 0 40px" }}>
             How SafeCheck Works

@@ -8,28 +8,29 @@
 
   --color-secondary:       #1E3A5F;
   --color-secondary-light: #2563EB;
-  --color-secondary-pale:  #EFF6FF;
+  --color-secondary-pale:  #0F1F33;
 
-  --color-background: #F9FAFB;
-  --color-surface:    #FFFFFF;
-  --color-surface-dark: #111827;
+  --color-background: #020617;
+  --color-surface:    #0F172A;
+  --color-surface-raised: #1E293B;
+  --color-surface-dark: #000000;
 
-  --color-text:            #111827;
-  --color-text-muted:      #6B7280;
+  --color-text:            #F1F5F9;
+  --color-text-muted:      #94A3B8;
   --color-text-on-primary: #FFFFFF;
-  --color-text-on-dark:    #F9FAFB;
+  --color-text-on-dark:    #F1F5F9;
 
-  --color-border:       #E5E7EB;
+  --color-border:       #334155;
   --color-border-focus: #DC2626;
 
-  --color-error:      #DC2626;
-  --color-error-bg:   #FEF2F2;
-  --color-success:    #16A34A;
-  --color-success-bg: #F0FDF4;
-  --color-warning:    #D97706;
-  --color-warning-bg: #FFFBEB;
+  --color-error:      #EF4444;
+  --color-error-bg:   rgba(69, 10, 10, 0.4);
+  --color-success:    #10B981;
+  --color-success-bg: rgba(2, 44, 34, 0.3);
+  --color-warning:    #F59E0B;
+  --color-warning-bg: rgba(69, 26, 3, 0.3);
   --color-info:       #2563EB;
-  --color-info-bg:    #EFF6FF;
+  --color-info-bg:    rgba(23, 37, 84, 0.3);
 
   --background: var(--color-background);
   --foreground: var(--color-text);

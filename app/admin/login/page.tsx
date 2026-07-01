@@ -32,101 +32,99 @@ export default function AdminLoginPage() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#0d0d0d",
+      background: "#f9fafb",
       display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 20,
+      flexDirection: "column",
+      position: "relative",
+      overflow: "hidden",
     }}>
-      <div style={{ width: "100%", maxWidth: 360 }}>
-        {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{
-            width: 44, height: 44,
-            background: "var(--color-primary)",
-            borderRadius: 12,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            margin: "0 auto 14px",
-          }}>
-            <span style={{ color: "#fff", fontWeight: 800, fontSize: 16 }}>SC</span>
-          </div>
-          <h1 style={{ color: "#f9fafb", fontWeight: 700, fontSize: 18, margin: "0 0 4px" }}>
-            SafeCheck Admin
-          </h1>
-          <p style={{ color: "#6b7280", fontSize: 13, margin: 0 }}>
-            Lead management dashboard
-          </p>
-        </div>
+      {/* Top bar */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "20px 40px",
+        position: "relative", zIndex: 10,
+      }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: "#111827", letterSpacing: "-0.01em" }}>
+          SafeCheck SA
+        </span>
+        <p style={{ fontSize: 13, color: "#6b7280", margin: 0 }}>
+          <span style={{ fontWeight: 600, color: "#111827" }}>Admin sign in</span>
+          {" · "}Lead management dashboard
+        </p>
+      </div>
 
-        {/* Card */}
-        <div style={{
-          background: "#1a1a1a",
-          border: "1px solid #2a2a2a",
-          borderRadius: 16,
-          padding: 24,
-        }}>
+      {/* Centered form */}
+      <div style={{
+        flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "24px 16px", position: "relative", zIndex: 10,
+      }}>
+        <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: 360, display: "flex", flexDirection: "column", gap: 18 }}>
+
           {error && (
-            <div style={{
-              marginBottom: 16,
-              padding: "10px 14px",
-              background: "rgba(220,38,38,0.12)",
-              border: "1px solid rgba(220,38,38,0.3)",
-              borderRadius: 8,
-              fontSize: 13,
-              color: "#fca5a5",
+            <p style={{
+              fontSize: 13, color: "#DC2626", margin: 0,
+              background: "#fef2f2", border: "1px solid #fecaca",
+              borderRadius: 6, padding: "10px 14px",
             }}>
               {error}
-            </div>
+            </p>
           )}
 
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{
-                display: "block", fontSize: 12, fontWeight: 600,
-                color: "#9ca3af", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em",
-              }}>
-                Admin Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoFocus
-                placeholder="Enter password"
-                style={{
-                  width: "100%", height: 44,
-                  background: "#222", border: "1px solid #333",
-                  borderRadius: 8, padding: "0 14px",
-                  fontSize: 14, color: "#f9fafb", outline: "none",
-                  boxSizing: "border-box",
-                  transition: "border-color 0.15s",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--color-primary)")}
-                onBlur={(e) => (e.target.style.borderColor = "#333")}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading || !password}
+          <div>
+            <label style={{
+              display: "block", fontSize: 13, fontWeight: 500,
+              color: "#111827", marginBottom: 6,
+            }}>
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoFocus
+              placeholder="••••••••"
               style={{
-                width: "100%", height: 44,
-                background: loading || !password ? "#333" : "var(--color-primary)",
-                color: loading || !password ? "#6b7280" : "#fff",
-                border: "none", borderRadius: 8,
-                fontSize: 14, fontWeight: 700, cursor: loading || !password ? "not-allowed" : "pointer",
-                transition: "background 0.15s",
+                width: "100%", height: 44, padding: "0 14px",
+                border: "1px solid #d1d5db", borderRadius: 6,
+                background: "#fff", fontSize: 14, color: "#111827",
+                outline: "none", boxSizing: "border-box",
+                transition: "border-color 0.15s",
               }}
-            >
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
-        </div>
+              onFocus={(e) => (e.target.style.borderColor = "#DC2626")}
+              onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
+            />
+          </div>
 
-        <p style={{ textAlign: "center", fontSize: 11, color: "#374151", marginTop: 20 }}>
-          SafeCheck SA &mdash; Powered by Nerve &mdash; IDT
-        </p>
+          <button
+            type="submit"
+            disabled={loading || !password}
+            style={{
+              width: "100%", height: 44,
+              background: loading || !password ? "#d1d5db" : "#DC2626",
+              color: loading || !password ? "#9ca3af" : "#fff",
+              border: "none", borderRadius: 6,
+              fontSize: 14, fontWeight: 600,
+              cursor: loading || !password ? "not-allowed" : "pointer",
+              transition: "background 0.15s, opacity 0.15s",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+        </form>
+      </div>
+
+      {/* Footer bar */}
+      <div style={{
+        background: "#111827",
+        padding: "12px 40px",
+        textAlign: "right",
+        position: "relative", zIndex: 10,
+      }}>
+        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>
+          &copy; {new Date().getFullYear()} SafeCheck SA &mdash; Powered by Nerve &mdash; IDT
+        </span>
       </div>
     </div>
   );

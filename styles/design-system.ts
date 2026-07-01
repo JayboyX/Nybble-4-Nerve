@@ -10,30 +10,31 @@ export const colors = {
   secondaryLight: "#2563EB", // Blue — links/info
   secondaryPale: "#EFF6FF", // Pale blue — info backgrounds
 
-  // Surfaces
-  background: "#F9FAFB",
-  surface: "#FFFFFF",
-  surfaceDark: "#111827",
+  // Surfaces — dark, fear-driven
+  background: "#020617",     // slate-950
+  surface: "#0F172A",        // slate-900 — cards
+  surfaceRaised: "#1E293B",  // slate-800 — nested/hover surfaces
+  surfaceDark: "#000000",
 
   // Text
-  text: "#111827",
-  textMuted: "#6B7280",
+  text: "#F1F5F9",           // slate-100
+  textMuted: "#94A3B8",      // slate-400
   textOnPrimary: "#FFFFFF",
-  textOnDark: "#F9FAFB",
+  textOnDark: "#F1F5F9",
 
   // Borders
-  border: "#E5E7EB",
+  border: "#334155",         // slate-700
   borderFocus: "#DC2626",
 
   // Feedback
-  error: "#DC2626",
-  errorBg: "#FEF2F2",
-  success: "#16A34A",
-  successBg: "#F0FDF4",
-  warning: "#D97706",
-  warningBg: "#FFFBEB",
+  error: "#EF4444",
+  errorBg: "rgba(69, 10, 10, 0.4)",   // red-950/40
+  success: "#10B981",
+  successBg: "rgba(2, 44, 34, 0.3)",  // emerald-950/30
+  warning: "#F59E0B",
+  warningBg: "rgba(69, 26, 3, 0.3)",  // amber-950/30
   info: "#2563EB",
-  infoBg: "#EFF6FF",
+  infoBg: "rgba(23, 37, 84, 0.3)",
 } as const;
 
 export const shadows = {

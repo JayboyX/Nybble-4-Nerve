@@ -55,8 +55,16 @@ export function Ticker() {
   const doubled = [...items, ...items];
 
   return (
-    <div className="scanline-host" style={{ width: "100%", overflow: "hidden", background: "var(--color-surface-dark)", color: "var(--color-text-on-dark)" }}>
-      <div style={{ position: "relative", height: 32, display: "flex", alignItems: "center" }}>
+    <div className="scanline-host" style={{ width: "100%", overflow: "hidden", background: "var(--color-surface-dark)", color: "var(--color-text-on-dark)", display: "flex", alignItems: "stretch" }}>
+      <div style={{
+        flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
+        padding: "0 12px", background: "var(--color-primary)",
+        fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", whiteSpace: "nowrap",
+      }}>
+        <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff" }} className="pulse-border" />
+        PUBLIC DATA
+      </div>
+      <div style={{ position: "relative", height: 32, flex: 1, display: "flex", alignItems: "center", overflow: "hidden" }}>
         <div
           key={items.length}
           className="animate-ticker"

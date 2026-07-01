@@ -49,9 +49,8 @@ export default async function Home() {
         }}
       >
         <div style={{ ...sectionPad, display: "flex", alignItems: "center", gap: 10 }}>
-          <Icon name="shield-checkmark" size={22} color="var(--color-primary)" />
           <div>
-            <div style={{ fontSize: 15, fontWeight: 800, color: "var(--color-text-on-dark)", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
+            <div style={{ fontSize: 15, fontWeight: 400, color: "var(--color-text-on-dark)", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
               SafeCheck South Africa
             </div>
             <div style={{ fontSize: 10, color: "var(--color-text-muted)", lineHeight: 1.2 }}>
@@ -82,7 +81,7 @@ export default async function Home() {
       <Ticker />
 
       {/* Hero / Form toggle */}
-      <HeroSection />
+      <HeroSection stolenToday={stats.stolen_today} annualThefts={stats.annual_thefts} />
 
       {/* Live Stats */}
       <section style={{ background: "var(--color-background)", borderBottom: "1px solid var(--color-border)" }}>

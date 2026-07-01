@@ -5,12 +5,40 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Icon } from "./icon";
 import { LiveCounter } from "./live-counter";
+import { StolenTodayCounter } from "./live-stats";
+import { AnimatedCounter } from "./animated-counter";
 import { CarCheckForm } from "./car-check-form";
 import { ScanScreen } from "./scan-screen";
 
 type FormData = { make: string; model: string; year: string; province: string };
 
-export function HeroSection() {
+function HeroStatBox({
+  icon, label, value, subtext, tone,
+}: {
+  icon: string; label: string; value: React.ReactNode; subtext: string; tone: "danger" | "warning";
+}) {
+  const accent = tone === "danger" ? "var(--color-primary)" : "var(--color-warning)";
+  const border = tone === "danger" ? "rgba(239, 68, 68, 0.3)" : "rgba(245, 158, 11, 0.3)";
+  const bg = tone === "danger" ? "var(--color-primary-pale)" : "var(--color-warning-bg)";
+  return (
+    <div style={{ flex: 1, minWidth: 0, textAlign: "left", padding: "10px 14px", borderRadius: 8, border: `1px solid ${border}`, background: bg }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+        <Icon name={icon} size={13} color={accent} />
+        <span style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.04em", color: "var(--color-text-muted)", fontWeight: 600 }}>{label}</span>
+      </div>
+      <div style={{ fontSize: 22, fontWeight: 800, color: accent, lineHeight: 1 }}>{value}</div>
+      <div style={{ fontSize: 10, color: "var(--color-text-muted)", marginTop: 3 }}>{subtext}</div>
+    </div>
+  );
+}
+
+export function HeroSection({
+  stolenToday,
+  annualThefts,
+}: {
+  stolenToday: number;
+  annualThefts: number;
+}) {
   const [showForm, setShowForm] = useState(false);
   const [scanning, setScanning] = useState<FormData | null>(null);
   const router = useRouter();
@@ -53,13 +81,13 @@ export function HeroSection() {
                     borderRadius: 20,
                     background: "var(--color-primary-pale)",
                     color: "var(--color-primary)",
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: 600,
-                    marginBottom: 24,
+                    marginBottom: 20,
                   }}
                 >
-                  <Icon name="shield-checkmark-outline" size={16} color="var(--color-primary)" />
-                  <LiveCounter /> checks today
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--color-primary)" }} className="pulse-border" />
+                  Based on publicly available SAPS crime statistics 2025–2026
                 </div>
                 <h1
                   className="hero-title"
@@ -72,19 +100,19 @@ export function HeroSection() {
                     letterSpacing: "-0.02em",
                   }}
                 >
-                  Is YOUR Car on the Most-Hijacked List?
+                  Is <span style={{ color: "var(--color-primary)" }}>YOUR</span> Car on the Most-Hijacked List?
                 </h1>
                 <p
                   style={{
                     fontSize: 16,
                     color: "var(--color-text-muted)",
                     maxWidth: 480,
-                    margin: "0 auto 32px",
+                    margin: "0 auto 28px",
                     lineHeight: 1.6,
                   }}
                 >
-                  Check your vehicle against real South African theft and hijacking
-                  statistics. Free. Instant. Anonymous.
+                  50 vehicles are hijacked every single day in South Africa. Check your
+                  risk in 30 seconds. Free. No registration required.
                 </p>
                 <button
                   onClick={() => setShowForm(true)}
@@ -108,6 +136,27 @@ export function HeroSection() {
                   Check My Car Now
                   <Icon name="arrow-forward-outline" size={15} color="#fff" />
                 </button>
+
+                <div style={{ display: "flex", gap: 10, maxWidth: 420, margin: "28px auto 0" }}>
+                  <HeroStatBox
+                    icon="alert-circle-outline"
+                    label="Stolen Today"
+                    value={<StolenTodayCounter initial={stolenToday} />}
+                    subtext="And counting..."
+                    tone="danger"
+                  />
+                  <HeroStatBox
+                    icon="trending-up-outline"
+                    label="Annual Thefts"
+                    value={<AnimatedCounter target={annualThefts} />}
+                    subtext="Public statistics"
+                    tone="warning"
+                  />
+                </div>
+
+                <p style={{ fontSize: 12, color: "var(--color-text-muted)", marginTop: 16 }}>
+                  <LiveCounter /> checks today
+                </p>
               </motion.div>
             ) : (
               <motion.div

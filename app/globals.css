@@ -169,11 +169,11 @@ body {
 
 /* Hero responsive */
 .hero-title {
-  font-size: 28px;
+  font-size: 22px;
 }
 
 @media (min-width: 640px) {
   .hero-title {
-    font-size: 40px;
+    font-size: 36px;
   }
 }

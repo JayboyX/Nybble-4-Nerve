@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/hero-section";
 import { CheckCtaButton } from "@/components/check-cta-button";
 import { IonIconLoader } from "@/components/icon";
 import { LiveFeed } from "@/components/live-feed";
+import { ChecksTodayCounter } from "@/components/live-stats";
 import { ProvinceBars } from "@/components/province-bars";
 import {
   getStats,
@@ -43,16 +44,22 @@ export default async function Home() {
         style={{
           background: "var(--color-surface-dark)",
           borderBottom: "1px solid var(--color-border)",
-          padding: "12px 20px",
+          padding: "8px 16px",
         }}
       >
-        <div style={{ ...sectionPad, display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ ...sectionPad, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 400, color: "var(--color-text-on-dark)", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
+            <div style={{ fontSize: 14, fontWeight: 400, color: "var(--color-text-on-dark)", letterSpacing: "-0.01em", lineHeight: 1.1 }}>
               SafeCheck South Africa
             </div>
-            <div style={{ fontSize: 10, color: "var(--color-text-muted)", lineHeight: 1.2 }}>
+            <div style={{ fontSize: 9, color: "var(--color-text-muted)", lineHeight: 1.2 }}>
               Powered by Nerve
+            </div>
+          </div>
+          <div style={{ textAlign: "right", flexShrink: 0 }}>
+            <div style={{ fontSize: 9, color: "var(--color-text-muted)", lineHeight: 1.2 }}>Checks today</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--color-primary)", lineHeight: 1.2 }}>
+              <ChecksTodayCounter />
             </div>
           </div>
         </div>
@@ -63,10 +70,10 @@ export default async function Home() {
         style={{
           background: "#1e3a5f",
           color: "#fff",
-          fontSize: 11,
+          fontSize: 10,
           textAlign: "center",
-          padding: "8px 20px",
-          lineHeight: 1.6,
+          padding: "5px 16px",
+          lineHeight: 1.4,
           letterSpacing: "0.01em",
         }}
       >

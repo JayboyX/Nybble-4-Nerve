@@ -1,14 +1,19 @@
 import { Suspense } from "react";
 import { calculateRisk, getLevelColor, getLevelBg } from "../lib/risk";
+import { getStories } from "../lib/data";
 import { ResultsClient } from "./results-client";
 
 async function ResultsContent({ params }: { params: { [key: string]: string } }) {
-  const risk = await calculateRisk(params.make, params.model, params.year, params.province);
+  const [risk, stories] = await Promise.all([
+    calculateRisk(params.make, params.model, params.year, params.province),
+    getStories(),
+  ]);
   return (
     <ResultsClient
       risk={risk}
       levelColor={getLevelColor(risk.level)}
       levelBg={getLevelBg(risk.level)}
+      stories={stories}
     />
   );
 }

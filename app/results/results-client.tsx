@@ -6,7 +6,11 @@ import { Icon, IonIconLoader } from "@/components/icon";
 import { SocialProofNotifications } from "@/components/social-proof";
 import { ProtectionFlow } from "@/components/protection-flow";
 import { ShareModal } from "@/components/share-modal";
+import { FearAccordion } from "@/components/fear-accordion";
+import { LiveFeed } from "@/components/live-feed";
 import type { RiskResult } from "@/app/lib/risk";
+
+type Story = { location: string; car: string; summary: string };
 
 function track(event: string, props: Record<string, unknown>) {
   try {
@@ -41,10 +45,12 @@ export function ResultsClient({
   risk,
   levelColor,
   levelBg,
+  stories,
 }: {
   risk: RiskResult;
   levelColor: string;
   levelBg: string;
+  stories: Story[];
 }) {
   const [showShare, setShowShare] = useState(false);
   const car = `${risk.make} ${risk.model}`;
@@ -87,6 +93,28 @@ export function ResultsClient({
       <SocialProofNotifications />
 
       <div style={{ maxWidth: 980, margin: "0 auto", padding: "24px 20px 80px" }}>
+
+        {/* Top nav row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <a href="/" style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            fontSize: 13, color: "var(--color-text-muted)", textDecoration: "none", fontWeight: 500,
+          }}>
+            <Icon name="arrow-back-outline" size={14} color="var(--color-text-muted)" />
+            Check another car
+          </a>
+          <button
+            onClick={() => { setShowShare(true); track("share_clicked", { make: risk.make, model: risk.model }); }}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              background: "none", border: "none", cursor: "pointer",
+              fontSize: 13, color: "var(--color-primary)", fontWeight: 700,
+            }}
+          >
+            <Icon name="share-social-outline" size={14} color="var(--color-primary)" />
+            Warn friends
+          </button>
+        </div>
 
         {/* Disclaimer */}
         <p style={{ fontSize: 11, color: "var(--color-text-muted)", margin: "0 0 18px", lineHeight: 1.6 }}>
@@ -196,49 +224,69 @@ export function ResultsClient({
           </motion.div>
         </div>
 
-        {/* ── Share CTA ── */}
+        {/* ── Urgent Share CTA ── */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.18 }}
+          className="pulse-border"
           style={{
             marginTop: 16,
-            background: "var(--color-surface)",
-            borderRadius: 8,
-            border: "1px solid var(--color-border)",
-            padding: "14px 20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 16,
-            flexWrap: "wrap",
+            background: "var(--color-primary-pale)",
+            borderRadius: 10,
+            border: "2px solid var(--color-primary)",
+            padding: "20px 24px",
+            textAlign: "center",
           }}
         >
-          <div>
-            <p style={{ fontSize: 13, fontWeight: 600, color: "var(--color-text)", margin: "0 0 1px" }}>
-              Know someone with a {car}?
-            </p>
-            <p style={{ fontSize: 12, color: "var(--color-text-muted)", margin: 0 }}>
-              Send them this risk report — it could save their car.
-            </p>
-          </div>
+          <p style={{
+            fontSize: 13, fontWeight: 800, color: "var(--color-primary-light)", margin: "0 0 6px",
+            textTransform: "uppercase", letterSpacing: "0.04em",
+          }}>
+            Protect your community — warn them now
+          </p>
+          <p style={{ fontSize: 12, color: "var(--color-text-muted)", margin: "0 0 16px", maxWidth: 480, marginLeft: "auto", marginRight: "auto", lineHeight: 1.6 }}>
+            Your family, friends, and colleagues are driving on SA roads completely unaware. Sharing this risk report spreads immediate awareness across WhatsApp groups.
+          </p>
           <button
             onClick={() => { setShowShare(true); track("share_clicked", { make: risk.make, model: risk.model }); }}
             style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "8px 14px", borderRadius: 6,
-              border: "1px solid var(--color-border)", background: "var(--color-surface-raised)",
-              color: "var(--color-text)", fontSize: 13, fontWeight: 600,
-              cursor: "pointer", flexShrink: 0,
-              transition: "border-color 0.15s, color 0.15s",
+              display: "inline-flex", alignItems: "center", gap: 8,
+              padding: "12px 24px", borderRadius: 8,
+              border: "none", background: "var(--color-primary)",
+              color: "#fff", fontSize: 14, fontWeight: 700,
+              cursor: "pointer",
             }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--color-primary)"; (e.currentTarget as HTMLButtonElement).style.color = "var(--color-primary)"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--color-border)"; (e.currentTarget as HTMLButtonElement).style.color = "var(--color-text)"; }}
           >
-            <Icon name="logo-whatsapp" size={14} color="currentColor" />
-            Share Risk Report
+            <Icon name="logo-whatsapp" size={16} color="#fff" />
+            Warn Them Now on WhatsApp
           </button>
         </motion.div>
+
+        {/* ── Detailed Risk Breakdown ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.26 }}
+          style={{ marginTop: 16 }}
+        >
+          <FearAccordion risk={risk} />
+        </motion.div>
+
+        {/* ── Representative Claim Scenarios ── */}
+        {stories.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.34 }}
+            style={{
+              marginTop: 16, background: "var(--color-surface)", borderRadius: 8,
+              border: "1px solid var(--color-border)", padding: 20,
+            }}
+          >
+            <LiveFeed initialStories={stories} />
+          </motion.div>
+        )}
       </div>
 
       {showShare && <ShareModal risk={risk} onClose={() => setShowShare(false)} />}

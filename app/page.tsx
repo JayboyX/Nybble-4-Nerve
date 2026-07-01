@@ -1,10 +1,8 @@
-import { AnimatedCounter } from "@/components/animated-counter";
 import { Ticker } from "@/components/ticker";
 import { HeroSection } from "@/components/hero-section";
 import { CheckCtaButton } from "@/components/check-cta-button";
-import { Icon, IonIconLoader } from "@/components/icon";
+import { IonIconLoader } from "@/components/icon";
 import { LiveFeed } from "@/components/live-feed";
-import { StolenTodayCounter, ChecksTodayCounter } from "@/components/live-stats";
 import { ProvinceBars } from "@/components/province-bars";
 import {
   getStats,
@@ -81,55 +79,12 @@ export default async function Home() {
       <Ticker />
 
       {/* Hero / Form toggle */}
-      <HeroSection stolenToday={stats.stolen_today} annualThefts={stats.annual_thefts} />
-
-      {/* Live Stats */}
-      <section style={{ background: "var(--color-background)", borderBottom: "1px solid var(--color-border)" }}>
-        <div style={{ ...sectionPad, padding: "48px 20px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
-            {/* Stolen Today — live incrementing */}
-            <div style={{ ...card, padding: 20 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <Icon name="alert-circle-outline" size={16} color="var(--color-text-muted)" />
-                <span style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 500 }}>Stolen Today</span>
-              </div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "var(--color-text)" }}>
-                <StolenTodayCounter initial={stats.stolen_today} />
-              </div>
-            </div>
-
-            {/* Checks Today — time-seeded */}
-            <div style={{ ...card, padding: 20 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <Icon name="shield-checkmark-outline" size={16} color="var(--color-text-muted)" />
-                <span style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 500 }}>Checks Today</span>
-              </div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: "var(--color-text)" }}>
-                <ChecksTodayCounter />
-              </div>
-            </div>
-
-            {/* Static counters */}
-            {[
-              { label: "Annual Thefts", value: stats.annual_thefts, suffix: "", icon: "car-outline" },
-              { label: "Recovery Rate", value: Number(stats.recovery_rate_pct), suffix: "%", icon: "locate-outline" },
-              { label: "Avg. Time to Border", value: stats.time_to_border_min, suffix: " min", icon: "time-outline" },
-            ].map((stat) => (
-              <div key={stat.label} style={{ ...card, padding: 20 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                  <Icon name={stat.icon} size={16} color="var(--color-text-muted)" />
-                  <span style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 500 }}>
-                    {stat.label}
-                  </span>
-                </div>
-                <div style={{ fontSize: 28, fontWeight: 700, color: "var(--color-text)" }}>
-                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HeroSection
+        stolenToday={stats.stolen_today}
+        annualThefts={stats.annual_thefts}
+        recoveryRatePct={Number(stats.recovery_rate_pct)}
+        timeToBorderMin={stats.time_to_border_min}
+      />
 
       {/* Main Content Grid */}
       <section style={{ background: "var(--color-background)", flex: 1 }}>

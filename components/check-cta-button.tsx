@@ -4,13 +4,7 @@ import { Icon } from "./icon";
 
 export function CheckCtaButton() {
   function handleClick() {
-    const hero = document.getElementById("hero-section");
-    if (hero) {
-      hero.scrollIntoView({ behavior: "smooth" });
-      setTimeout(() => {
-        window.dispatchEvent(new CustomEvent("open-check-form"));
-      }, 400);
-    }
+    document.getElementById("hero-section")?.scrollIntoView({ behavior: "smooth" });
   }
 
   return (

@@ -141,7 +141,7 @@ export function LiveFeed({ initialStories }: { initialStories: Story[] }) {
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
               style={{
-                background: "#fff",
+                background: "var(--color-surface)",
                 borderRadius: 8,
                 border: "1px solid var(--color-border)",
                 padding: "14px 16px",

@@ -31,17 +31,17 @@ Tracks which files have been touched by the site-wide Codesk design language rev
 | File | Status |
 |---|---|
 | components/animated-counter.tsx | Pending |
-| components/car-check-form.tsx | Pending |
-| components/check-cta-button.tsx | Pending |
+| components/car-check-form.tsx | Done |
+| components/check-cta-button.tsx | Done |
 | components/fear-accordion.tsx | Pending |
 | components/hero-section.tsx | Done |
 | components/icon.tsx | Pending |
-| components/live-counter.tsx | Pending |
-| components/live-feed.tsx | Pending |
-| components/live-stats.tsx | Pending |
+| components/live-counter.tsx | Done |
+| components/live-feed.tsx | Done |
+| components/live-stats.tsx | Done |
 | components/posthog-provider.tsx | Pending |
 | components/protection-flow.tsx | Pending |
-| components/province-bars.tsx | Pending |
+| components/province-bars.tsx | Done |
 | components/scan-screen.tsx | Pending |
 | components/share-modal.tsx | Pending |
 | components/social-proof.tsx | Pending |

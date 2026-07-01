@@ -57,11 +57,11 @@ export default async function Home() {
         government agency.
       </div>
 
-      {/* Hero / Form toggle */}
-      <HeroSection />
-
       {/* Ticker */}
       <Ticker />
+
+      {/* Hero / Form toggle */}
+      <HeroSection />
 
       {/* Live Stats */}
       <section style={{ background: "var(--color-background)", borderBottom: "1px solid var(--color-border)" }}>

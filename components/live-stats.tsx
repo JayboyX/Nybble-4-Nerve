@@ -43,26 +43,33 @@ function getChecksBase(): number {
   return Math.round(base + (next - base) * (m / 60));
 }
 
+// Cumulative share of the day's total reached by the start of each hour —
+// low overnight, climbing through the day, reaching 100% by midnight.
+const STOLEN_TODAY_CURVE = [
+  0.02, 0.035, 0.045, 0.05, 0.06, 0.08, 0.12, 0.18,
+  0.26, 0.34, 0.40, 0.46, 0.52, 0.57, 0.62, 0.67,
+  0.73, 0.79, 0.85, 0.90, 0.94, 0.97, 0.99, 1.0,
+];
+
+// Derives a stable value from the real "stolen today" total based on time of
+// day — e.g. 7-8am shows a lower share than 8-9am — instead of ticking up
+// live while the page is open. Changes only when the hour changes or the
+// page is revisited, so every visit within the same hour sees the same number.
+function getStolenTodayValue(dailyTotal: number): number {
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const share = STOLEN_TODAY_CURVE[h];
+  const nextShare = STOLEN_TODAY_CURVE[(h + 1) % 24];
+  const interpolated = share + (nextShare - share) * (m / 60);
+  return Math.max(1, Math.round(dailyTotal * interpolated));
+}
+
 export function StolenTodayCounter({ initial }: { initial: number }) {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
-    setCount(initial);
-
-    const tick = () => {
-      // I-008: most increments are +1, occasional burst of 6+
-      const burst = Math.random() < 0.15;
-      const increment = burst ? Math.floor(Math.random() * 8) + 6 : 1;
-      setCount((c) => (c ?? initial) + increment);
-
-      // Next increment: 45–90 seconds
-      const nextMs = 45000 + Math.random() * 45000;
-      timeout = setTimeout(tick, nextMs);
-    };
-
-    // I-005: first increment within 60 seconds
-    let timeout = setTimeout(tick, 30000 + Math.random() * 25000);
-    return () => clearTimeout(timeout);
+    setCount(getStolenTodayValue(initial));
   }, [initial]);
 
   if (count === null) return <span>--</span>;
@@ -73,13 +80,7 @@ export function ChecksTodayCounter() {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
-    const base = getChecksBase();
-    setCount(base);
-
-    const interval = setInterval(() => {
-      setCount((c) => (c ?? base) + Math.floor(Math.random() * 3) + 1);
-    }, 8000);
-    return () => clearInterval(interval);
+    setCount(getChecksBase());
   }, []);
 
   if (count === null) return <span>--</span>;

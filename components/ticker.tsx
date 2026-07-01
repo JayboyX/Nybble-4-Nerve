@@ -55,10 +55,11 @@ export function Ticker() {
   const doubled = [...items, ...items];
 
   return (
-    <div className="scanline-host" style={{ width: "100%", overflow: "hidden", background: "var(--color-surface-dark)", color: "var(--color-text-on-dark)", display: "flex", alignItems: "stretch" }}>
+    <div className="scanline-host" style={{ width: "100%", overflow: "hidden", background: "var(--color-primary-dark)", color: "#fff", display: "flex", alignItems: "stretch" }}>
       <div style={{
         flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
         padding: "0 12px", background: "var(--color-primary)",
+        borderRight: "1px solid rgba(255,255,255,0.2)",
         fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", whiteSpace: "nowrap",
       }}>
         <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#fff" }} className="pulse-border" />
